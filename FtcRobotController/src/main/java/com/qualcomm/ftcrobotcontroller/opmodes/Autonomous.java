@@ -2,32 +2,49 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.ftcrobotcontroller.Map;
 
 /**
  * Created by Travis on 10/3/2015.
  * Team 10464 Autonomous program
  */
-public class Autonomous extends OpMode {
 
+public class Autonomous extends OpMode {
+    public final double TOL = .1; //tolerance for heading calculations
     DcMotor motorRT;
     DcMotor motorRB;
     DcMotor motorLT;
     DcMotor motorLB;
     DcMotor motorA;
-
-    Servo servoArm;
+    DcMotor motorS;
+    GyroSensor gyro;
 
     //We stateful now, boys.
-    int sensorState = 0;
-    int gameState = 0;
-    int moveState = 0;
+    int sensorState;
+    int gameState;
+    int moveState;
 
-    /**
-     * Constructor
-     */
+//Map visualization
+//      {0,0,0,0,0,0,0,0,3,3,3,3}
+//      {0,0,0,0,0,0,0,0,0,3,3,3}
+//      {0,0,0,0,0,0,0,0,0,0,3,3}
+//      {0,0,0,0,0,0,0,0,0,0,0,3}
+//      {0,0,0,0,0,0,0,0,0,0,0,0}
+//      {0,0,0,0,0,0,0,0,0,0,0,0}
+//      {0,0,0,0,0,0,0,0,0,0,0,0}
+//      {3,0,0,0,0,0,0,0,0,0,0,0}
+//      {3,3,0,0,0,0,0,0,0,0,0,0}
+//      {3,3,3,0,0,0,0,0,0,0,0,0}
+//      {3,3,3,3,0,0,0,0,0,0,0,0}
+
+    Map map = new Map("Red"); //this map object will allow for easy manipulations.
+
+    //GYRO
+    int xVal,yVal,zVal,heading;
+
     public Autonomous() {
-
+        //not used in the history of ever.
     }
 
     /*
@@ -42,44 +59,15 @@ public class Autonomous extends OpMode {
 
         motorLT = hardwareMap.dcMotor.get("motor_LT");
         motorLB = hardwareMap.dcMotor.get("motor_LT");
+
         motorLT.setDirection(DcMotor.Direction.REVERSE);
-        motorLB.setDirection(DcMotor.Direction.REVERSE);
+        motorRB.setDirection(DcMotor.Direction.REVERSE);
 
-        motorA = hardwareMap.dcMotor.get("motor_arm");
-        servoArm = hardwareMap.servo.get("servo_arm");
+        motorA = hardwareMap.dcMotor.get("motor_A");
+        motorS = hardwareMap.dcMotor.get("motor_S");
 
-        //The information below will henceforth be referred to as the 'brain' of this program.
-        String Team = "Red";
-        //We need to, in memory, have a map detailing what is where on the field. I believe a 2d
-        //array will be the best way of handling this, as it allows us to not only store where we
-        //are, but where various constant pieces of the field are at (collection zones, mountains,
-        //etc.
-        int[][] map = { //TODO: Break map up into recognizable chunks for position error checking
-                        //TODO: and intelligent decision making
-                        /*BlueMountain*/
-                {0,0,0,0,0,0,0,0,3,3,3,3}, /*Red Side*/
-                {0,0,0,0,0,0,0,0,0,3,3,3},
-                {0,0,0,0,0,0,0,0,0,0,3,3},
-                {0,0,0,0,0,0,0,0,0,0,0,3},/*RedMountain*/
-                {0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0},
-                {3,0,0,0,0,0,0,0,0,0,0,0},
-                {3,3,0,0,0,0,0,0,0,0,0,0},
-/*RedMountain*/ {3,3,3,0,0,0,0,0,0,0,0,0},
-                {3,3,3,3,0,0,0,0,0,0,0,0}
- /*Blue Side*/  /*BlueMountain*/
-        }; //12x12 2d array; reference by saying map[x][y];
-        //We divide the map into 144 1ft x 1ft squares to simplify calculations.
-
-        //LEGEND
-        //0 = blank-ish space
-        //1 = our robot
-        //2 = suspected robots
-        //3 = mountain
-        //... TODO: finish this
-        //9 = goal (Where we should be moving to) (NOT SET IN INIT)
-
+        gyro = hardwareMap.gyroSensor.get("gyro");
+        gyro.calibrate();
     }
 
     /*
@@ -98,7 +86,7 @@ public class Autonomous extends OpMode {
                 //need, we can set sensorState to 0 and hope for the best.
                 break;
             case 1: //Color sensor logic
-                //
+                heading = gyro.getHeading();
                 break;
             case 2:
                 //I'm now having the internal debate as to the importance of sensor states... It's
@@ -115,19 +103,34 @@ public class Autonomous extends OpMode {
         switch(gameState){
             case 0: //Start of game:
                 //It was recommended to us that we should wait at the gate for a few second to allow
-                //our teammate to GTFO, avoiding unnecessary beginning-game collisions.
-                if(getRuntime() > 5) {
+                //our teammate to GTFO, avoiding unnecessary beginning-game collisions. It will also
+                //give our gyro a second to calibrate.
+                if(getRuntime() > 5 && !gyro.isCalibrating()) {
                     gameState = 1;
                 }
                 break;
             case 1: //Colour sensor
-                //I'm sure there is more we can do here, I just don't know what.
                 //// TODO: 10/27/2015 Expand on gameState 1 uses
+                map.setGoal(0,7);
                 sensorState = 1;
         }
         switch(moveState){
             //Never should we be just 'moving', always move TOWARDS something.
+            case 1:
+                //Case one is 'move towards' in the most literal sense. It assumes the path is
+                //clear, and that there is a goal(9), and us(1) on the map somewhere.
 
+                //Checks our heading.
+                if(Math.abs(heading-map.angleToGoal()) < TOL){
+
+                }else{
+                    moveState = 2;
+                }
+            case 2:
+                //Case Two is 'turn towards'
+            case 3:
+                //Case Three is 'move around'. implies there is something in front of us that we'd
+                //like to not hit.
         }
 
 
