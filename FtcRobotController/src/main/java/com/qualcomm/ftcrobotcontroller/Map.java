@@ -24,12 +24,12 @@ public class Map {
 
     public Map(String teamColor){ //pass in Team color
         this.teamColor = teamColor;
-        if(teamColor.equals("Red")){
-            robotX = 7;
+        if(teamColor.equals("Blue")){
+            robotX = 6;
             robotY = 11;
         }else{
-            robotX = 11;
-            robotY = 7;
+            robotX = 6;
+            robotY = 0;
         }
     }
     public void setGoal(int x, int y){
