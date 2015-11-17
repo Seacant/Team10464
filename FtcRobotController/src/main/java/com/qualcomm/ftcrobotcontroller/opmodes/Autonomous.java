@@ -2,6 +2,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.ftcrobotcontroller.Map;
 
@@ -21,7 +22,6 @@ public class Autonomous extends OpMode {
 //    GyroSensor gyro;
 
     //We stateful now, boys.
-    int sensorState;
     int gameState;
     int moveState;
     double power;
@@ -70,6 +70,10 @@ public class Autonomous extends OpMode {
         motorA = hardwareMap.dcMotor.get("motor_A");
         motorS = hardwareMap.dcMotor.get("motor_S");
 
+        motorRT.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorRB.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorLT.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorLB.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 //        gyro = hardwareMap.gyroSensor.get("gyro");
 //        gyro.calibrate();
     }
@@ -83,27 +87,7 @@ public class Autonomous extends OpMode {
     public void loop() {
         sTime = getRuntime();
         //Information gathering phase
-        switch(sensorState){
-            case 0: //Start:
-                //Deciding what goes in here is difficult- How much do we really need to know to
-                //accurately start driving our robot? This being said, I am having an internal
-                //argument as to making this a 'default' class, where if we even don't know what we
-                //need, we can set sensorState to 0 and hope for the best.
-                break;
-            case 1: //Color sensor logic
-                if(motorLB.getPower()-motorRB.getPower()<=0){heading += 360*(36*dTime);}//gyro.getHeading();
-                if(motorLB.getPower()-motorRB.getPower()>=0){heading -= 360*(36*dTime);}//gyro.getHeading();
-                break;
-            case 2:
-                //I'm now having the internal debate as to the importance of sensor states... It's
-                //not like there will ever be an instance where we want to ignore data, right? We
-                //could always treat the sensor case as a 'how do we interpret this data', due to
-                //our absence of a case for that, but I cannot help feeling like that encroaches on
-                //being TOO modular.
-                break;
-        } //It is expected that, by now, all sensory information is committed to 'memory', and ready
-          //to be digested by the rest of the program (hence being at the beginning of the loop).
-
+            //heading = gyro.getHeading();
 
         //Goal-specific logic
         switch(gameState){
@@ -118,7 +102,6 @@ public class Autonomous extends OpMode {
             case 1: //Move to beacon
                 //// TODO: 10/27/2015 Expand on gameState 1 uses
                 map.setGoal(0,7);
-                sensorState = 1;
                 //Checks our heading.
                 if(Math.abs(heading-map.angleToGoal()) < TOL){
                     moveState = 1;
@@ -139,11 +122,13 @@ public class Autonomous extends OpMode {
             case 1:
                 //Case one is 'move towards' in the most literal sense. It assumes the path is
                 //clear, and that there is a goal(9), and us(1) on the map somewhere.
-                power = 0.5; //power coefficient
-                motorRT.setPower(power);
-                motorRB.setPower(power);
-                motorLT.setPower(power);
-                motorLB.setPower(power);
+                power = 1; //power coefficient
+                if(map.distanceToGoal()>1/12) {
+                    motorRT.setPower(power);
+                    motorRB.setPower(power);
+                    motorLT.setPower(power);
+                    motorLB.setPower(power);
+                }
                 break;
             case 2:
                 //Case Two is 'turn towards'.
