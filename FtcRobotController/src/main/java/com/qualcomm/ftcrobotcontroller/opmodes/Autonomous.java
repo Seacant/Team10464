@@ -1,10 +1,12 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.ftcrobotcontroller.Map;
+
 
 /**
  * Created by Travis on 10/3/2015.
@@ -13,13 +15,16 @@ import com.qualcomm.ftcrobotcontroller.Map;
 
 public class Autonomous extends OpMode {
     public final double TOL = .1; //tolerance for heading calculations
+    public final double DEGREES_TO_FEET = (20.45*.03281)/360; //Constant for converting encoder
+    //readings (degrees turned) into feet. **WARNING** Always calculate distance CHANGED, since
+    //encoders have no concept of direction, and we are moving across a 2D plane.
     DcMotor motorRT;
     DcMotor motorRB;
     DcMotor motorLT;
     DcMotor motorLB;
     DcMotor motorA;
     DcMotor motorS;
-//    GyroSensor gyro;
+    GyroSensor gyro;
 
     //We stateful now, boys.
     int gameState;
@@ -28,6 +33,9 @@ public class Autonomous extends OpMode {
     double sTime;
     double eTime;
     double dTime;
+    int cDist; //current distance (from encoder) reading
+    int lDist; //last distance (from encoder) reading
+    int dDist; //the aforementioned difference (cDist-lDist) **CAN BE NEGATIVE
 
 //Map visualization
 //      {0,0,0,0,0,0,0,0,3,3,3,3}
@@ -70,12 +78,8 @@ public class Autonomous extends OpMode {
         motorA = hardwareMap.dcMotor.get("motor_A");
         motorS = hardwareMap.dcMotor.get("motor_S");
 
-        motorRT.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorRB.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorLT.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorLB.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-//        gyro = hardwareMap.gyroSensor.get("gyro");
-//        gyro.calibrate();
+        gyro = hardwareMap.gyroSensor.get("gyro");
+        gyro.calibrate();
     }
 
     /*
@@ -85,9 +89,13 @@ public class Autonomous extends OpMode {
      */
     @Override
     public void loop() {
-        sTime = getRuntime();
         //Information gathering phase
-            //heading = gyro.getHeading();
+        sTime = getRuntime();
+        lDist = cDist;
+        cDist = (motorLB.getCurrentPosition()+motorRB.getCurrentPosition()+motorLT.getCurrentPosition()+motorLB.getCurrentPosition())/4; //average of motor positions
+        dDist = cDist-lDist;
+        heading = gyro.getHeading();
+
 
         //Goal-specific logic
         switch(gameState){
@@ -95,13 +103,13 @@ public class Autonomous extends OpMode {
                 //It was recommended to us that we should wait at the gate for a few second to allow
                 //our teammate to GTFO, avoiding unnecessary beginning-game collisions. It will also
                 //give our gyro a second to calibrate.
-//                if(getRuntime() > 5 && !gyro.isCalibrating()) {
+                if(getRuntime() > 5 && !gyro.isCalibrating()) {
                     gameState = 1;
-//                }
+                }
                 break;
             case 1: //Move to beacon
                 //// TODO: 10/27/2015 Expand on gameState 1 uses
-                map.setGoal(0,7);
+                map.setGoal(0, 7);
                 //Checks our heading.
                 if(Math.abs(heading-map.angleToGoal()) < TOL){
                     moveState = 1;
@@ -128,6 +136,7 @@ public class Autonomous extends OpMode {
                     motorRB.setPower(power);
                     motorLT.setPower(power);
                     motorLB.setPower(power);
+                    map.moveRobot(dDist*DEGREES_TO_FEET , heading);
                 }
                 break;
             case 2:
