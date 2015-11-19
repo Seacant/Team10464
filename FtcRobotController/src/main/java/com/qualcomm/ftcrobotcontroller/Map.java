@@ -47,14 +47,19 @@ public class Map {
     }
 
     public double angleToGoal(){
-        double dX = robotX-goalX;
-        double dY = robotY-goalY;
-        return (Math.tan(dY/dX)*180)/Math.PI; //return degrees because that's what the gyro uses.
+        double dX = goalX-robotX;
+        double dY = goalY-robotY;
+        return (((Math.atan2(dY,dX)*180)/Math.PI)+270)%360; //Ask Travis why we +270%360
     }
 
     public double distanceToGoal(){
-        double dX = robotX-goalX;
-        double dY = robotY-goalY;
+        double dX = goalX-robotX;
+        double dY = goalY-robotY;
         return Math.sqrt(dX*dX*dY*dY); //return length of hypotenuse
+    }
+
+    public void moveRobot(double inches,double heading){
+        robotX += inches*Math.cos(Math.toRadians(heading));
+        robotY += inches*Math.sin(Math.toRadians(heading));
     }
 }
