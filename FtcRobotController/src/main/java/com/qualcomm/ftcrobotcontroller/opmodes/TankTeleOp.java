@@ -62,7 +62,7 @@ public class TankTeleOp extends OpMode {
             armPos = 0;
         }
 
-        /if(gamepad1.left_trigger>0) {
+        if(gamepad1.left_trigger>0) {
             motorSpindle.setPower(gamepad1.left_trigger);
         }
         if(gamepad1.right_trigger>0){
