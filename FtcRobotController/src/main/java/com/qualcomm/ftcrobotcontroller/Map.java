@@ -46,6 +46,14 @@ public class Map {
         return goalY;
     }
 
+    public double getRobotX(){
+        return robotX;
+    }
+
+    public double getRobotY(){
+        return robotY;
+    }
+
     public double angleToGoal(){
         double dX = goalX-robotX;
         double dY = goalY-robotY;
@@ -55,7 +63,7 @@ public class Map {
     public double distanceToGoal(){
         double dX = goalX-robotX;
         double dY = goalY-robotY;
-        return Math.sqrt(dX*dX*dY*dY); //return length of hypotenuse
+        return Math.sqrt(dX*dX+dY*dY); //return length of hypotenuse
     }
 
     public void moveRobot(double inches,double heading){
