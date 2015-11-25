@@ -16,12 +16,12 @@ import com.qualcomm.ftcrobotcontroller.Map;
 
 public class Autonomous extends OpMode {
     public final double TOL = 10; //tolerance for heading calculations
-    public final double DEGREES_TO_FEET =0.004659475694444444444444444444444444444444444444444;
-    // ((204.5*.03281)/360)*(360/1440) = Constant for converting encoder = ^^^^^^^^
+    public final double DEGREES_TO_FEET = 0.0004659239004629629629629629629629629629629629629629;
+    // ((204.5*.03937))/(1440*12) = Constant for converting encoder = ^^^^^^^^
     //EXPLAINATION:
     //204.5=65(diameter of sprocket in mm)*PI
-    //.03281 = millimeter to inch conversion
-    //360/1440 converts encoder reading, where one rotation is 1440, to degrees.
+    //.03937 = millimeter to inch conversion
+    //(1440*12) converts encoder reading, where one rotation is 1440, to feet.
     //**WARNING** Always calculate distance CHANGED, since encoders have no
     // concept of direction, and we are moving across a 2D plane.
     DcMotor motorRT;
@@ -126,7 +126,6 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 2:
-
                 break;
         }
         switch(moveState){
