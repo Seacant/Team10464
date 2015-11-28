@@ -111,6 +111,8 @@ public class Autonomous extends OpMode {
         dDist = cDist-lDist;
         heading = gyro.getHeading();
 
+	//Constantly checks the state of ultrasonic sensors. If an object is too close and we are not next to the mountains or one of the boundaries of the course, then we shift to moveState 3 (going around something).
+
 
         //Goal-specific logic
         switch(gameState){
@@ -183,6 +185,13 @@ public class Autonomous extends OpMode {
             case 3:
                 //Case Three is 'move around'. implies there is something in front of us that we'd
                 //like to not hit.
+
+                // Checks our current position and orientation to make sure we are not in the mountain zone or facing one of the boundaries of the course. (Redundant but good to have)
+
+		// Stop, wait for .5 seconds and recheck if object is still there. This might help us avoid starting to turn when a robot is about to get out of the way as well to avoid the start of a turn due to a false detection of an object.
+
+		// Detects proximity of the robot, randomly chooses a direction, then makes a small rotation towards the chosen direction so that if a robot of given dimensions (max dimensions) was in front the sensor would not be able to detect it any more. Checks if object is still in front. If it is, then move in the direction opposite to that chosen. If it isn’t move forward until it is safe to change direction back to the original objective.
+
                 break;
             case 4:
                 climber.setPosition(0);
