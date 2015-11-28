@@ -2,7 +2,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
+import com.qualcomm.robotcore.hardware.Servo;
 /**
  * Created by Travis on 10/3/2015.
  */
@@ -14,6 +14,9 @@ public class TankTeleOp extends OpMode {
     DcMotor motorLeftB;
     DcMotor motorArm;
     DcMotor motorSpindle;
+    Servo climber;
+    Servo rightSwing;
+    Servo leftSwing;
     float armPos;
     /**
      * Constructor
@@ -40,8 +43,10 @@ public class TankTeleOp extends OpMode {
 
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
         motorLeftB.setDirection(DcMotor.Direction.REVERSE);
-        //motorRightB.setDirection(DcMotor.Direction.REVERSE);
-
+        
+        climber = hardwareMap.servo.get("climber");
+        rightSwing = hardwareMap.servo.get("swing_r");
+        leftSwing = hardwareMap.servo.get("swing_l");
 
     }
 
@@ -54,29 +59,43 @@ public class TankTeleOp extends OpMode {
     public void loop() {
         motorSpindle.setPower(0);
         motorArm.setPower(0);
-
+        
         if(gamepad1.a){
             armPos = 1;
         }
         if(gamepad1.b){
             armPos = 0;
         }
-
+        
         if(gamepad1.left_trigger>0) {
             motorSpindle.setPower(gamepad1.left_trigger);
         }
+        
         if(gamepad1.right_trigger>0){
-            motorSpindle.setPower(-1*gamepad1.right_trigger);
+            motorSpindle.setPower(-gamepad1.right_trigger);
         }
-
+        
         if(gamepad1.dpad_up) {
             motorArm.setPower(.3);
         }
-
+        
         if(gamepad1.dpad_down) {
             motorArm.setPower(-.1);
         }
-
+        if(gamepad1.dpad_left){
+            rightSwing.setPosition(1);      
+            leftSwing.setPosition(1);      
+        } 
+        if(gamepad1.dpad_right){
+            rightSwing.setPosition(0); 
+            leftSwing.setPosition(0); 
+        }
+        if(gamepad1.x){
+            climber.setPosition(1);
+        }   
+        if(gamepad1.y){
+            climber.setPosition(0);
+        }
         motorRight.setPower(gamepad1.right_stick_y);
         motorRightB.setPower(gamepad1.right_stick_y);
         motorLeft.setPower(gamepad1.left_stick_y);
