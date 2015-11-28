@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.ftcrobotcontroller.Map;
-
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by Travis on 10/3/2015.
@@ -31,6 +31,10 @@ public class Autonomous extends OpMode {
     DcMotor motorA;
     DcMotor motorS;
     GyroSensor gyro;
+    Servo climber;
+    Servo swingLeft;
+    Servo swingRight;
+       
 
     //We stateful now, boys.
     int gameState;
@@ -56,7 +60,7 @@ public class Autonomous extends OpMode {
 //      {3,3,3,0,0,0,0,0,0,0,0,0}
 //      {3,3,3,3,0,0,0,0,0,0,0,0}
 
-    Map map = new Map("Red"); //this map object will allow for easy manipulations.
+    Map map = new Map("Blue"); //this map object will allow for easy manipulations.
 
     //GYRO
     double xVal,yVal,zVal,heading;
@@ -83,7 +87,10 @@ public class Autonomous extends OpMode {
 
         motorA = hardwareMap.dcMotor.get("motor_A");
         motorS = hardwareMap.dcMotor.get("motor_S");
-
+        climber = hardwareMap.servo.get("climber");
+        swingLeft = hardwareMap.servo.get("swing_l");
+        swingRight = hardwareMap.servo.get("swing_r");
+        
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
     }
@@ -112,12 +119,13 @@ public class Autonomous extends OpMode {
                 //our teammate to GTFO, avoiding unnecessary beginning-game collisions. It will also
                 //give our gyro a second to calibrate.
                 if(getRuntime() > 5 || !gyro.isCalibrating()) {
+                    climber.setPosition(1);
                     gameState = 1;
                 }
                 break;
             case 1: //Move to beacon
                 //// TODO: 10/27/2015 Expand on gameState 1 uses
-                map.setGoal(0, 7);
+                map.setGoal(11, 6);
                 //Checks our heading.
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
@@ -126,6 +134,14 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 2:
+                map.setGoal(300,6);
+                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 4 : 2;
+                if(climber.getPosition() == 0){
+                    moveState = 0;
+                    gameState = 3; 
+                }
+                break;
+            case 3:
                 break;
         }
         switch(moveState){
@@ -168,17 +184,19 @@ public class Autonomous extends OpMode {
                 //Case Three is 'move around'. implies there is something in front of us that we'd
                 //like to not hit.
                 break;
+            case 4:
+                climber.setPosition(0);
+                break;
         }
 
-        telemetry.addData("dTime ",dTime);
         telemetry.addData("Runtime ",getRuntime());
         telemetry.addData("heading ",heading);
-        telemetry.addData("cDist ",dDist);
         telemetry.addData("goal x,y ",map.getGoalX()+","+map.getGoalY());
         telemetry.addData("robot x,y ",map.getRobotX()+","+map.getRobotY());
         telemetry.addData("angle to goal ",map.angleToGoal());
         telemetry.addData("dist from goal ",map.distanceToGoal());
-        Log.i("Sand", "Distance traveled in " + dTime + ": " + (dDist * DEGREES_TO_FEET));
+        telemetry.addData("moveState & gameState ",moveState + " " + gameState);
+        telemetry.addData("climber pos: ",climber.getPosition());
     }
 
     /*
