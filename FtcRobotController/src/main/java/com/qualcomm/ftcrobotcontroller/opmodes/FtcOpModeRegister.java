@@ -47,7 +47,6 @@ public class FtcOpModeRegister implements OpModeRegister {
    */
   public void register(OpModeManager manager) {
 
-    manager.register("MR Gyro Test", MRGyroTest.class);
     manager.register("TeleOp", TankTeleOp.class);
     manager.register("Autonomous", Autonomous.class);
 
