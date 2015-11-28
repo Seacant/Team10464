@@ -59,7 +59,7 @@ public class Map {
     public double angleToGoal(){
         double dX = goalX-robotX;
         double dY = goalY-robotY;
-        return (((Math.atan2(dY, dX) * 180) / Math.PI) + 450) % 360; //Ask Travis why we +270%360
+        return (((Math.atan2(dY, dX) * 180) / Math.PI) + 450) % 360; //Ask Travis why we +450%360
     }
 
     public double distanceToGoal(){
@@ -69,7 +69,7 @@ public class Map {
     }
 
     public void moveRobot(double feet,double heading) {
-        robotX -= feet * Math.cos(Math.toRadians((heading + 450) % 360));
-        robotY -= feet * Math.sin(Math.toRadians((heading + 450) % 360));
+        robotX -= 2*feet * Math.cos(Math.toRadians((heading + 450) % 360));
+        robotY -= 2*feet * Math.sin(Math.toRadians((heading + 450) % 360));
     }
 }
