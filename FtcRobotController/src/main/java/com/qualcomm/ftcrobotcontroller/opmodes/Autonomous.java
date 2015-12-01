@@ -1,8 +1,5 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import android.util.Log;
-
-import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
@@ -15,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 public class Autonomous extends OpMode {
-    public final double TOL = 10; //tolerance for heading calculations
+    public final double TOL = 7; //tolerance for heading calculations
     public final double DEGREES_TO_FEET = 0.0004659239004629629629629629629629629629629629629629;
     // ((204.5*.03937))/(1440*12) = Constant for converting encoder = ^^^^^^^^
     //EXPLAINATION:
@@ -107,7 +104,7 @@ public class Autonomous extends OpMode {
         eTime = getRuntime();
         dTime = eTime - sTime;
         lDist = cDist;
-        cDist = (motorLB.getCurrentPosition()+motorRB.getCurrentPosition()+motorLT.getCurrentPosition()+motorLB.getCurrentPosition())/4; //average of motor positions
+        cDist = (motorLB.getCurrentPosition()+motorRB.getCurrentPosition()+motorLT.getCurrentPosition()+motorRT.getCurrentPosition())/4; //average of motor positions
         dDist = cDist-lDist;
         heading = gyro.getHeading();
 
@@ -127,7 +124,7 @@ public class Autonomous extends OpMode {
                 break;
             case 1: //Move to beacon
                 //// TODO: 10/27/2015 Expand on gameState 1 uses
-                map.setGoal(11, 6);
+                map.setGoal(10.25, 6);
                 //Checks our heading.
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
@@ -144,6 +141,16 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 3:
+                map.setGoal(8,5);
+                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
+                    moveState = 0;  // stop the robot
+                    gameState = 4;  // Move to the next stage.
+                }
+                break;
+            case 4:
+                map.setGoal(53,-35);
+                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 break;
         }
         switch(moveState){
@@ -194,7 +201,7 @@ public class Autonomous extends OpMode {
 
                 break;
             case 4:
-                climber.setPosition(0);
+                climber.setPosition(.25);
                 break;
         }
 
@@ -205,7 +212,7 @@ public class Autonomous extends OpMode {
         telemetry.addData("angle to goal ",map.angleToGoal());
         telemetry.addData("dist from goal ",map.distanceToGoal());
         telemetry.addData("moveState & gameState ",moveState + " " + gameState);
-        telemetry.addData("climber pos: ",climber.getPosition());
+        telemetry.addData("climber pos: ", climber.getPosition());
     }
 
     /*

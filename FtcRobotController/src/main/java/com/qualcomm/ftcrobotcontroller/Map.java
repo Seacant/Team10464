@@ -28,14 +28,14 @@ public class Map {
         this.teamColor = teamColor;
         if(teamColor.equals("Blue")){
             robotX = 6;
-            robotY = 11;
+            robotY = 10.25;
         }else{
             robotX = 6;
             robotY = 0;
         }
     }
 
-    public void setGoal(int x, int y){
+    public void setGoal(double x, double y){
         goalX = x;
         goalY = y;
     }
