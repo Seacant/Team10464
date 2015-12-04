@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.ftcrobotcontroller.Map;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.Color;
+
 
 /**
  * Created by Travis on 10/3/2015.
@@ -28,6 +31,10 @@ public class Autonomous extends OpMode {
     DcMotor motorA;
     DcMotor motorS;
     GyroSensor gyro;
+    ColorSensor color;
+    OpticalDistanceSensor ODSC;
+    OpticalDistanceSensor ODSR;
+    OpticalDistanceSensor ODSL;
     Servo climber;
     Servo swingLeft;
     Servo swingRight;
@@ -213,6 +220,9 @@ public class Autonomous extends OpMode {
         telemetry.addData("dist from goal ",map.distanceToGoal());
         telemetry.addData("moveState & gameState ",moveState + " " + gameState);
         telemetry.addData("climber pos: ", climber.getPosition());
+        telemetry.addData("ODS left", climber.getPosition());
+        telemetry.addData("ODS center", ODSC.**********);
+        telemetry.addData("ODS right", climber.getPosition());
     }
 
     /*
