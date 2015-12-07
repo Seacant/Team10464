@@ -25,13 +25,13 @@ public class Map {
     double robotX, robotY;
     String teamColor;
 
-    public Map(String teamColor){ //pass in Team color
-        this.teamColor = teamColor;
+    public Map(String color){ //pass in Team color
+        teamColor = color;
         if(teamColor.equals("Blue")){
             robotX = 6;
             robotY = 10.25;
         }else{
-            robotX = 11;
+            robotX = 0.75;
             robotY = 6;
         }
     }
@@ -60,7 +60,7 @@ public class Map {
     public double angleToGoal(){
         double dX = goalX-robotX;
         double dY = goalY-robotY;
-        return (((Math.atan2(dY, dX) * 180) / Math.PI) + 450) % 360; //Ask Travis why we +450%360
+        return (((Math.atan2(dY, dX) * 180) / Math.PI) + (teamColor.equals("Blue") ? 450 : 360)) % 360; //Ask Travis
     }
 
     public double distanceToGoal(){
@@ -70,7 +70,7 @@ public class Map {
     }
 
     public void moveRobot(double feet,double heading) {
-        robotX -= feet * Math.cos(Math.toRadians((heading + 450) % 360));
-        robotY -= feet * Math.sin(Math.toRadians((heading + 450) % 360));
+        robotX -= feet * Math.cos(Math.toRadians((heading + (teamColor.equals("Blue") ? 450 : 360)) % 360));
+        robotY -= feet * Math.sin(Math.toRadians((heading + (teamColor.equals("Blue") ? 450 : 360)) % 360));
     }
 }
