@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.ftcrobotcontroller.Map;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-import com.qualcomm.robotcore.hardware.Color;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 
 /**
@@ -31,7 +31,7 @@ public class Autonomous extends OpMode {
     DcMotor motorA;
     DcMotor motorS;
     GyroSensor gyro;
-    ColorSensor color;
+    ColorSensorDriver color;
     OpticalDistanceSensor ODSC;
     OpticalDistanceSensor ODSR;
     OpticalDistanceSensor ODSL;
@@ -142,13 +142,13 @@ public class Autonomous extends OpMode {
             case 2:
                 map.setGoal(300,6);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 4 : 2;
-                if(climber.getPosition() == 0){
+                if(Math.abs(climber.getPosition()-.25) > .02){
                     moveState = 0;
                     gameState = 3; 
                 }
                 break;
             case 3:
-                map.setGoal(8,5);
+                map.setGoal(8,7);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
                     moveState = 0;  // stop the robot
@@ -156,7 +156,7 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 4:
-                map.setGoal(53,-35);
+                map.setGoal(53,45);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 break;
         }
@@ -221,7 +221,7 @@ public class Autonomous extends OpMode {
         telemetry.addData("moveState & gameState ",moveState + " " + gameState);
         telemetry.addData("climber pos: ", climber.getPosition());
         telemetry.addData("ODS left", climber.getPosition());
-        telemetry.addData("ODS center", ODSC.**********);
+        telemetry.addData("ODS center", "Test");
         telemetry.addData("ODS right", climber.getPosition());
     }
 
