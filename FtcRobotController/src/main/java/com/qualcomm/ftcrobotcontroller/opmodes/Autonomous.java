@@ -129,26 +129,27 @@ public class Autonomous extends OpMode {
                     gameState = 1;
                 }
                 break;
-            case 1: //Move to beacon
-                //// TODO: 10/27/2015 Expand on gameState 1 uses
-                map.setGoal(10.25, 6);
-                //Checks our heading.
+            case 1:
+                map.setGoal(6,9);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
                     moveState = 0;  // stop the robot
                     gameState = 2;  // Move to the next stage.
                 }
                 break;
-            case 2:
-                map.setGoal(300,6);
-                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 4 : 2;
-                if(Math.abs(climber.getPosition()-.25) > .02){
-                    moveState = 0;
-                    gameState = 3; 
+            case 2: //Move to beacon
+                //// TODO: 10/27/2015 Expand on gameState 1 uses
+                map.setGoal(9.25, 6);
+                //Checks our heading.
+                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
+                    moveState = 0;  // stop the robot
+                    gameState = 3;  // Move to the next stage.
                 }
                 break;
             case 3:
-                map.setGoal(8,7);
+                map.setGoal(10.25, 6);
+                //Checks our heading.
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
                     moveState = 0;  // stop the robot
@@ -156,6 +157,22 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 4:
+                map.setGoal(300,6);
+                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 4 : 2;
+                if(Math.abs(climber.getPosition()-.25) < .02){
+                    moveState = 0;
+                    gameState = 5;
+                }
+                break;
+            case 5:
+                map.setGoal(8.5,7);
+                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
+                    moveState = 0;  // stop the robot
+                    gameState = 6;  // Move to the next stage.
+                }
+                break;
+            case 6:
                 map.setGoal(53,45);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 break;
@@ -183,7 +200,7 @@ public class Autonomous extends OpMode {
                 break;
             case 2:
                 //Case Two is 'turn towards'.
-                power = 0.5;
+                power = 0.25;
                 if(heading-map.angleToGoal()>0) {
                     motorRT.setPower(power);
                     motorRB.setPower(power);
