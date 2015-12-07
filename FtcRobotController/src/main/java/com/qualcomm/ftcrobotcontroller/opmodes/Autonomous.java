@@ -7,6 +7,7 @@ import com.qualcomm.ftcrobotcontroller.Map;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
 
 /**
@@ -31,10 +32,11 @@ public class Autonomous extends OpMode {
     DcMotor motorA;
     DcMotor motorS;
     GyroSensor gyro;
-    ColorSensorDriver color;
+    ColorSensor color;
     OpticalDistanceSensor ODSC;
     OpticalDistanceSensor ODSR;
     OpticalDistanceSensor ODSL;
+    UltrasonicSensor USM; //UltraSonic Middle
     Servo climber;
     Servo swingLeft;
     Servo swingRight;
@@ -157,7 +159,7 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 4:
-                map.setGoal(300,6);
+                map.setGoal(11,6);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 4 : 2;
                 if(Math.abs(climber.getPosition()-.25) < .02){
                     moveState = 0;
