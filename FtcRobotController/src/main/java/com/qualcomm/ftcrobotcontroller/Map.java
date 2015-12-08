@@ -25,14 +25,14 @@ public class Map {
     double robotX, robotY;
     String teamColor;
 
-    public Map(String color){ //pass in Team color
+    public Map(String color,int startPos){ //pass in Team color
         teamColor = color;
         if(teamColor.equals("Blue")){
-            robotX = 6;
+            robotX = startPos;
             robotY = 10.25;
         }else{
             robotX = 0.75;
-            robotY = 6;
+            robotY = startPos;
         }
     }
 

@@ -66,7 +66,7 @@ public class Autonomous extends OpMode {
 //      {3,3,3,0,0,0,0,0,0,0,0,0}
 //      {3,3,3,3,0,0,0,0,0,0,0,0}
 
-    Map map = new Map("Blue"); //this map object will allow for easy manipulations.
+    Map map = new Map("Blue",6); //this map object will allow for easy manipulations.
 
     //GYRO
     double xVal,yVal,zVal,heading;

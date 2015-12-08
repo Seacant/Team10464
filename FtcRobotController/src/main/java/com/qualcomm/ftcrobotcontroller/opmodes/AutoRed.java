@@ -66,7 +66,7 @@ public class AutoRed extends OpMode {
 //      {3,3,3,0,0,0,0,0,0,0,0,0}
 //      {3,3,3,3,0,0,0,0,0,0,0,0}
 
-    Map map = new Map("Red"); //this map object will allow for easy manipulations.
+    Map map = new Map("Red",6); //this map object will allow for easy manipulations.
 
     //GYRO
     double xVal,yVal,zVal,heading;
