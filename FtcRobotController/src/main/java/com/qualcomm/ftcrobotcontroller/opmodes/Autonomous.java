@@ -45,14 +45,23 @@ public class Autonomous extends OpMode {
     //We stateful now, boys.
     int gameState;
     int moveState;
+
     double power;
-    double sTime;
-    double eTime;
-    double dTime;
+    double sTime; //StartTime
+    double eTime; //EndTime
+    double dTime; //DeltaTime
     int cDist; //current distance (from encoder) reading
     int lDist; //last distance (from encoder) reading
     int dDist; //the aforementioned difference (cDist-lDist) **CAN BE NEGATIVE
 
+    //Avoidance vars
+    double usmLevel;
+    int metaGameState = -1; //GameState is not always truthful, since we enter a new state when moving around.
+    //-1 = not set; else, use this as the gamestate to 'get back to', after we finish avoidance
+    double aTimeStart; //AvoidTimeStart.
+    double aDistTrav;  //Avoidance Distance Traveled.
+    double aDistToTrav; //Avoidance Distance To Travel.
+    boolean aPrefDir; //Avoidance Preferred direction. True=left & False=right
 //Map visualization
 //      {0,0,0,0,0,0,0,0,3,3,3,3}
 //      {0,0,0,0,0,0,0,0,0,3,3,3}
@@ -96,7 +105,8 @@ public class Autonomous extends OpMode {
         climber = hardwareMap.servo.get("climber");
         swingLeft = hardwareMap.servo.get("swing_l");
         swingRight = hardwareMap.servo.get("swing_r");
-        
+
+        USM = hardwareMap.ultrasonicSensor.get("sonic");
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
     }
@@ -106,6 +116,14 @@ public class Autonomous extends OpMode {
      *
      * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
      */
+    public void avoid(){ //always run right before break statement, to prevent over-revision.
+        if(usmLevel < 30.48){ //If something is ~a foot away, try to move around it.
+            moveState = 0; // We always set moveState to 0 when changing gameStates.
+            gameState = 10; //avoid
+        }else if(usmLevel < 1){ //If something is a cm away, there is no avoiding it. Just stop.
+            moveState = 0;
+        }
+    }
     @Override
     public void loop() {
         //Information gathering phase
@@ -117,8 +135,12 @@ public class Autonomous extends OpMode {
         dDist = cDist-lDist;
         heading = gyro.getHeading();
 
-	//Constantly checks the state of ultrasonic sensors. If an object is too close and we are not next to the mountains or one of the boundaries of the course, then we shift to moveState 3 (going around something).
+        //Everything here is so that we don't run into things
+        usmLevel = USM.getUltrasonicLevel(); //Uses cm?
 
+	    //Constantly checks the state of ultrasonic sensors. If an object is too close and we are
+	    // not next to the mountains or one of the boundaries of the course, then we shift to
+	    // moveState 3 (going around something).
 
         //Goal-specific logic
         switch(gameState){
@@ -131,10 +153,10 @@ public class Autonomous extends OpMode {
                     gameState = 1;
                 }
                 break;
-            case 1:
+            case 1: //Move up before turning to beacon
                 map.setGoal(6,9);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
-                if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
+                if(map.distanceToGoal()<=.1) {
                     moveState = 0;  // stop the robot
                     gameState = 2;  // Move to the next stage.
                 }
@@ -144,39 +166,64 @@ public class Autonomous extends OpMode {
                 map.setGoal(9.25, 6);
                 //Checks our heading.
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
-                if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
+                if(map.distanceToGoal()<=.1) {
                     moveState = 0;  // stop the robot
                     gameState = 3;  // Move to the next stage.
                 }
+                aPrefDir = true; //left. We need to be extremely careful with crossing over midline.
+                avoid();
                 break;
-            case 3:
+            case 3: //move to climber deposit
                 map.setGoal(10.25, 6);
                 //Checks our heading.
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
-                if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
+                if(map.distanceToGoal()<=.1 || usmLevel < 1) {
                     moveState = 0;  // stop the robot
                     gameState = 4;  // Move to the next stage.
                 }
                 break;
-            case 4:
+            case 4: // line up, and drop climbers
                 map.setGoal(11,6);
-                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 4 : 2;
+                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 5 : 2;
                 if(Math.abs(climber.getPosition()-.25) < .02){
                     moveState = 0;
                     gameState = 5;
                 }
                 break;
-            case 5:
+            case 5: // move to ramp alignment spot
                 map.setGoal(8.5,7);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
                     moveState = 0;  // stop the robot
                     gameState = 6;  // Move to the next stage.
                 }
+                aPrefDir = false; //Right is better for us.
+                avoid(); //may act erratically since we start on the wall.
                 break;
-            case 6:
+            case 6: //align with ramp, and gun it up.
                 map.setGoal(53,45);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                break;
+            case 10: // Move Around.
+                if(metaGameState == -1){
+                    metaGameState = gameState; //save my starting game state
+                    aTimeStart = sTime;
+                    aDistToTrav = map.distanceToGoal() / 8; //Arbitrary denominator. Change to fit testing.
+                }
+                if(aTimeStart > .5) { //give it a second before we do stuff.
+                    // Detects proximity of the robot, chooses a direction, then makes a small
+                    // rotation towards the chosen direction so that if a robot of given dimensions
+                    // (max dimensions) was in front the sensor would not be able to detect it any more.
+                    // Checks if object is still in front. If it is, then move in the direction opposite
+                    // to that chosen. If it isn’t move forward until it is safe to change direction
+                    // back to the original objective.
+                    moveState = usmLevel < 30.48 ? 3 : 1;
+                }
+                if((usmLevel > 30.48 && aTimeStart < .5) || (usmLevel > 30.48 && aDistToTrav < aDistTrav)){
+                    gameState = metaGameState;
+                    metaGameState = -1;
+                }
+                aDistTrav += dDist * DEGREES_TO_FEET;
                 break;
         }
         switch(moveState){
@@ -216,17 +263,22 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 3:
-                //Case Three is 'move around'. implies there is something in front of us that we'd
-                //like to not hit.
-
-                // Checks our current position and orientation to make sure we are not in the mountain zone or facing one of the boundaries of the course. (Redundant but good to have)
-
-		// Stop, wait for .5 seconds and recheck if object is still there. This might help us avoid starting to turn when a robot is about to get out of the way as well to avoid the start of a turn due to a false detection of an object.
-
-		// Detects proximity of the robot, randomly chooses a direction, then makes a small rotation towards the chosen direction so that if a robot of given dimensions (max dimensions) was in front the sensor would not be able to detect it any more. Checks if object is still in front. If it is, then move in the direction opposite to that chosen. If it isn’t move forward until it is safe to change direction back to the original objective.
-
+                //Case Three is independent turning. It cares not about our heading, but instead
+                //uses aPrefDir to pick which way to turn. Is used in Case 10 exclusively atm.
+                power = .25;
+                if(aPrefDir){
+                    motorRT.setPower(power);
+                    motorRB.setPower(power);
+                    motorLT.setPower(-power);
+                    motorLB.setPower(-power);
+                }else{
+                    motorRT.setPower(-power);
+                    motorRB.setPower(-power);
+                    motorLT.setPower(power);
+                    motorLB.setPower(power);
+                }
                 break;
-            case 4:
+            case 5:
                 climber.setPosition(.25);
                 break;
         }
@@ -239,9 +291,11 @@ public class Autonomous extends OpMode {
         telemetry.addData("dist from goal ",map.distanceToGoal());
         telemetry.addData("moveState & gameState ",moveState + " " + gameState);
         telemetry.addData("climber pos: ", climber.getPosition());
-        telemetry.addData("ODS left", climber.getPosition());
-        telemetry.addData("ODS center", "Test");
-        telemetry.addData("ODS right", climber.getPosition());
+        telemetry.addData("Ultrasonic: ", usmLevel);
+        telemetry.addData("aTimeStart: ", aTimeStart);
+        telemetry.addData("aDistToTrav ", aDistToTrav);
+        telemetry.addData("aDistTrav ", aDistTrav);
+
     }
 
     /*
