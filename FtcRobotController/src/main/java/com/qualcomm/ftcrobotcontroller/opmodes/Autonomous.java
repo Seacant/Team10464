@@ -106,6 +106,7 @@ public class Autonomous extends OpMode {
         swingLeft = hardwareMap.servo.get("swing_l");
         swingRight = hardwareMap.servo.get("swing_r");
 
+        color = hardwareMap.colorSensor.get("color");
         USM = hardwareMap.ultrasonicSensor.get("sonic");
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
@@ -120,8 +121,6 @@ public class Autonomous extends OpMode {
         if(usmLevel < 30.48){ //If something is ~a foot away, try to move around it.
             moveState = 0; // We always set moveState to 0 when changing gameStates.
             gameState = 10; //avoid
-        }else if(usmLevel < 1){ //If something is a cm away, there is no avoiding it. Just stop.
-            moveState = 0;
         }
     }
     @Override
@@ -135,12 +134,7 @@ public class Autonomous extends OpMode {
         dDist = cDist-lDist;
         heading = gyro.getHeading();
 
-        //Everything here is so that we don't run into things
-        usmLevel = USM.getUltrasonicLevel(); //Uses cm?
-
-	    //Constantly checks the state of ultrasonic sensors. If an object is too close and we are
-	    // not next to the mountains or one of the boundaries of the course, then we shift to
-	    // moveState 3 (going around something).
+        usmLevel = USM.getUltrasonicLevel(); //Uses cm
 
         //Goal-specific logic
         switch(gameState){
@@ -162,7 +156,6 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 2: //Move to beacon
-                //// TODO: 10/27/2015 Expand on gameState 1 uses
                 map.setGoal(9.25, 6);
                 //Checks our heading.
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
@@ -177,7 +170,7 @@ public class Autonomous extends OpMode {
                 map.setGoal(10.25, 6);
                 //Checks our heading.
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
-                if(map.distanceToGoal()<=.1 || usmLevel < 1) {
+                if(map.distanceToGoal()<=.1 || usmLevel < 5) {
                     moveState = 0;  // stop the robot
                     gameState = 4;  // Move to the next stage.
                 }
@@ -208,18 +201,19 @@ public class Autonomous extends OpMode {
                 if(metaGameState == -1){
                     metaGameState = gameState; //save my starting game state
                     aTimeStart = sTime;
+                    aDistTrav = 0;
                     aDistToTrav = map.distanceToGoal() / 8; //Arbitrary denominator. Change to fit testing.
                 }
-                if(aTimeStart > .5) { //give it a second before we do stuff.
+                if(aTimeStart > 2) { //give it a second before we do stuff.
                     // Detects proximity of the robot, chooses a direction, then makes a small
                     // rotation towards the chosen direction so that if a robot of given dimensions
                     // (max dimensions) was in front the sensor would not be able to detect it any more.
                     // Checks if object is still in front. If it is, then move in the direction opposite
                     // to that chosen. If it isn’t move forward until it is safe to change direction
                     // back to the original objective.
-                    moveState = usmLevel < 30.48 ? 3 : 1;
+                    moveState = (usmLevel < 30.48) ? 3 : 1;
                 }
-                if((usmLevel > 30.48 && aTimeStart < .5) || (usmLevel > 30.48 && aDistToTrav < aDistTrav)){
+                if((usmLevel > 30.48 && aTimeStart < 2) || (usmLevel > 30.48 && aDistToTrav < aDistTrav)){
                     gameState = metaGameState;
                     metaGameState = -1;
                 }
@@ -264,7 +258,7 @@ public class Autonomous extends OpMode {
                 break;
             case 3:
                 //Case Three is independent turning. It cares not about our heading, but instead
-                //uses aPrefDir to pick which way to turn. Is used in Case 10 exclusively atm.
+                //uses aPrefDir to pick which way to turn. This is used in Case 10 exclusively atm.
                 power = .25;
                 if(aPrefDir){
                     motorRT.setPower(power);
