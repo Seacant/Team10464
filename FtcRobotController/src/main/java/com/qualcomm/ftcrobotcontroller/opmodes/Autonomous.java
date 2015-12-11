@@ -164,7 +164,7 @@ public class Autonomous extends OpMode {
                     gameState = 3;  // Move to the next stage.
                 }
                 aPrefDir = true; //left. We need to be extremely careful with crossing over midline.
-                avoid();
+//                avoid();
                 break;
             case 3: //move to climber deposit
                 map.setGoal(10.25, 6);
@@ -191,7 +191,7 @@ public class Autonomous extends OpMode {
                     gameState = 6;  // Move to the next stage.
                 }
                 aPrefDir = false; //Right is better for us.
-                avoid(); //may act erratically since we start on the wall.
+//                avoid(); //may act erratically since we start on the wall.
                 break;
             case 6: //align with ramp, and gun it up.
                 map.setGoal(53,45);
@@ -213,7 +213,7 @@ public class Autonomous extends OpMode {
                     // back to the original objective.
                     moveState = (usmLevel < 30.48) ? 3 : 1;
                 }
-                if((usmLevel > 30.48 && aTimeStart < 2) || (usmLevel > 30.48 && aDistToTrav < aDistTrav)){
+                if(usmLevel > 30.48){
                     gameState = metaGameState;
                     metaGameState = -1;
                 }
@@ -244,7 +244,7 @@ public class Autonomous extends OpMode {
             case 2:
                 //Case Two is 'turn towards'.
                 power = 0.25;
-                if(heading-map.angleToGoal()>0) {
+                if(heading-map.angleToGoal()>0 || (heading>360 - TOL && map.angleToGoal() < TOL || (heading < TOL && map.angleToGoal() > 360 - TOL))) {
                     motorRT.setPower(power);
                     motorRB.setPower(power);
                     motorLT.setPower(-power);
