@@ -62,6 +62,9 @@ public class Autonomous extends OpMode {
     double aDistTrav;  //Avoidance Distance Traveled.
     double aDistToTrav; //Avoidance Distance To Travel.
     boolean aPrefDir; //Avoidance Preferred direction. True=left & False=right
+    double minHead;
+    double aX;
+    double aY;
 //Map visualization
 //      {0,0,0,0,0,0,0,0,3,3,3,3}
 //      {0,0,0,0,0,0,0,0,0,3,3,3}
@@ -120,7 +123,10 @@ public class Autonomous extends OpMode {
     public void avoid(){ //always run right before break statement, to prevent over-revision.
         if(usmLevel < 30.48){ //If something is ~a foot away, try to move around it.
             moveState = 0; // We always set moveState to 0 when changing gameStates.
-            gameState = 10; //avoid
+            if(gameState<9) { //technically, gameState 10 can be here, and I want to reserve meta's integrity.
+                metaGameState = gameState;
+            }
+            gameState = 8; //avoid
         }
     }
     @Override
@@ -164,7 +170,7 @@ public class Autonomous extends OpMode {
                     gameState = 3;  // Move to the next stage.
                 }
                 aPrefDir = true; //left. We need to be extremely careful with crossing over midline.
-//                avoid();
+                avoid();
                 break;
             case 3: //move to climber deposit
                 map.setGoal(10.25, 6);
@@ -191,33 +197,36 @@ public class Autonomous extends OpMode {
                     gameState = 6;  // Move to the next stage.
                 }
                 aPrefDir = false; //Right is better for us.
-//                avoid(); //may act erratically since we start on the wall.
+                avoid(); //may act erratically since we start on the wall.
                 break;
             case 6: //align with ramp, and gun it up.
                 map.setGoal(53,45);
                 moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
                 break;
-            case 10: // Move Around.
-                if(metaGameState == -1){
-                    metaGameState = gameState; //save my starting game state
-                    aTimeStart = sTime;
-                    aDistTrav = 0;
-                    aDistToTrav = map.distanceToGoal() / 8; //Arbitrary denominator. Change to fit testing.
-                }
-                if(aTimeStart > 2) { //give it a second before we do stuff.
-                    // Detects proximity of the robot, chooses a direction, then makes a small
-                    // rotation towards the chosen direction so that if a robot of given dimensions
-                    // (max dimensions) was in front the sensor would not be able to detect it any more.
-                    // Checks if object is still in front. If it is, then move in the direction opposite
-                    // to that chosen. If it isn’t move forward until it is safe to change direction
-                    // back to the original objective.
-                    moveState = (usmLevel < 30.48) ? 3 : 1;
-                }
-                if(usmLevel > 30.48){
+            case 8: // Move Around.
+                aTimeStart = sTime;
+                aDistTrav = 0;
+                aDistToTrav = map.distanceToGoal() / 8; //Arbitrary denominator. Change to fit testing.
+                gameState = 9;
+            case 9:
+                minHead = heading-map.angleToGoal();
+                if(aTimeStart > 2) {
+                    moveState = 3;
+                    if(usmLevel > 30){
+                        aX = map.getRobotX();
+                        aY = map.getRobotY();
+                        gameState = 10;
+                    }
+                }else if(usmLevel > 30){
                     gameState = metaGameState;
-                    metaGameState = -1;
                 }
-                aDistTrav += dDist * DEGREES_TO_FEET;
+                break;
+            case 10:
+                map.setGoal(aX+Math.cos(Math.toRadians(minHead)),aY+Math.sin(Math.toRadians(minHead)));
+                if(map.distanceToGoal() <= .1){
+                    gameState = metaGameState;
+                }
+                avoid(); //In case something is encountered on our new path, restart calculations.
                 break;
         }
         switch(moveState){
