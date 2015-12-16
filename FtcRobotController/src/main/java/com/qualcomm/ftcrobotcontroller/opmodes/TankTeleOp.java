@@ -13,11 +13,13 @@ public class TankTeleOp extends OpMode {
     DcMotor motorLeft;
     DcMotor motorLeftB;
     DcMotor motorArm;
-    DcMotor motorSpindle;
+    DcMotor motorArmExtender;
+    //DcMotor motorClaw;
     Servo climber;
     Servo rightSwing;
     Servo leftSwing;
-    float armPos;
+    //Servo leftBlocker;
+    //Servo rightBlocker;
     /**
      * Constructor
      */
@@ -39,7 +41,8 @@ public class TankTeleOp extends OpMode {
         motorLeftB = hardwareMap.dcMotor.get("motor_LB");
 
         motorArm = hardwareMap.dcMotor.get("motor_A");
-        motorSpindle = hardwareMap.dcMotor.get("motor_S");
+        motorArmExtender = hardwareMap.dcMotor.get("motor_S");
+        //motorClaw = hardwareMap.dcMotor.get("motor_c");
 
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
         motorLeftB.setDirection(DcMotor.Direction.REVERSE);
@@ -47,6 +50,8 @@ public class TankTeleOp extends OpMode {
         climber = hardwareMap.servo.get("climber");
         rightSwing = hardwareMap.servo.get("swing_r");
         leftSwing = hardwareMap.servo.get("swing_l");
+        //rightBlocker = hardwareMap.servo.get("right_block");
+        //leftBlocker = hardwareMap.servo.get("left_block");
 
     }
 
@@ -57,45 +62,51 @@ public class TankTeleOp extends OpMode {
      */
     @Override
     public void loop() {
-        motorSpindle.setPower(0);
+        motorArmExtender.setPower(0);
         motorArm.setPower(0);
         
         if(gamepad1.a){
-            armPos = 1;
+            //rightBlocker.setPosition(rightBlocker.getPosition()<.5?.8:.2); //needs to be tested
         }
         if(gamepad1.b){
-            armPos = 0;
+            //leftBlocker.setPosition(leftBlocker.getPosition()<.5?.8:.2); //needs to be tested
         }
-        
+
+        if(gamepad1.left_bumper){
+            //motorClaw.setPower(1);
+        }
+        if(gamepad1.right_bumper){
+            //motorClaw.setPower(-1);
+        }
+
         if(gamepad1.left_trigger>0) {
-            motorSpindle.setPower(gamepad1.left_trigger);
+            motorArmExtender.setPower(gamepad1.left_trigger);
         }
-        
         if(gamepad1.right_trigger>0){
-            motorSpindle.setPower(-gamepad1.right_trigger);
+            motorArmExtender.setPower(-gamepad1.right_trigger);
         }
         
         if(gamepad1.dpad_up) {
             motorArm.setPower(.3);
         }
-        
         if(gamepad1.dpad_down) {
-            motorArm.setPower(-.1);
+            motorArm.setPower(-.3);
         }
         if(gamepad1.dpad_left){
-            rightSwing.setPosition(1);      
-            leftSwing.setPosition(1);      
-        } 
-        if(gamepad1.dpad_right){
-            rightSwing.setPosition(0); 
-            leftSwing.setPosition(0); 
+            leftSwing.setPosition(leftSwing.getPosition()<.5?1:0);
         }
+
+        if(gamepad1.dpad_right){
+            rightSwing.setPosition(rightSwing.getPosition()<.5?1:0);
+        }
+
         if(gamepad1.x){
             climber.setPosition(1);
         }   
         if(gamepad1.y){
             climber.setPosition(0);
         }
+
         motorRight.setPower(gamepad1.right_stick_y);
         motorRightB.setPower(gamepad1.right_stick_y);
         motorLeft.setPower(gamepad1.left_stick_y);
