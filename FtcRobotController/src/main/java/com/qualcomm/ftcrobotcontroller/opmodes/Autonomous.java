@@ -100,6 +100,9 @@ public class Autonomous extends OpMode {
         motorLT = hardwareMap.dcMotor.get("motor_LT");
         motorLB = hardwareMap.dcMotor.get("motor_LB");
 
+        motorLT.setDirection(DcMotor.Direction.FORWARD);
+        motorLB.setDirection(DcMotor.Direction.FORWARD);
+
         motorRT.setDirection(DcMotor.Direction.REVERSE);
         motorRB.setDirection(DcMotor.Direction.REVERSE);
 
@@ -129,6 +132,13 @@ public class Autonomous extends OpMode {
             gameState = 8; //avoid
         }
     }
+    public void linedUp(int o, int n){
+        if(Math.abs(heading-map.angleToGoal()) < TOL || (heading>360 - TOL && map.angleToGoal() < TOL || (heading < TOL && map.angleToGoal() > 360 - TOL))){
+            moveState = o;
+        }else{
+            moveState = n;
+        }
+    }
     @Override
     public void loop() {
         //Information gathering phase
@@ -155,7 +165,7 @@ public class Autonomous extends OpMode {
                 break;
             case 1: //Move up before turning to beacon
                 map.setGoal(6,9);
-                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
                     moveState = 0;  // stop the robot
                     gameState = 2;  // Move to the next stage.
@@ -164,18 +174,18 @@ public class Autonomous extends OpMode {
             case 2: //Move to beacon
                 map.setGoal(9.25, 6);
                 //Checks our heading.
-                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
                     moveState = 0;  // stop the robot
                     gameState = 3;  // Move to the next stage.
                 }
                 aPrefDir = true; //left. We need to be extremely careful with crossing over midline.
-                avoid();
+                if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
                 map.setGoal(10.25, 6);
                 //Checks our heading.
-                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                linedUp(1,2);
                 if(map.distanceToGoal()<=.1 || usmLevel < 5) {
                     moveState = 0;  // stop the robot
                     gameState = 4;  // Move to the next stage.
@@ -183,7 +193,7 @@ public class Autonomous extends OpMode {
                 break;
             case 4: // line up, and drop climbers
                 map.setGoal(11,6);
-                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 5 : 2;
+                linedUp(5,2);
                 if(Math.abs(climber.getPosition()-.25) < .02){
                     moveState = 0;
                     gameState = 5;
@@ -191,7 +201,7 @@ public class Autonomous extends OpMode {
                 break;
             case 5: // move to ramp alignment spot
                 map.setGoal(8.5,7);
-                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                linedUp(1,2);
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
                     moveState = 0;  // stop the robot
                     gameState = 6;  // Move to the next stage.
@@ -201,7 +211,7 @@ public class Autonomous extends OpMode {
                 break;
             case 6: //align with ramp, and gun it up.
                 map.setGoal(53,45);
-                moveState = Math.abs(heading-map.angleToGoal()) < TOL ? 1 : 2;
+                linedUp(1,2);
                 break;
             case 8: // Move Around.
                 aTimeStart = sTime;
@@ -253,7 +263,7 @@ public class Autonomous extends OpMode {
             case 2:
                 //Case Two is 'turn towards'.
                 power = 0.25;
-                if(heading-map.angleToGoal()>0 || (heading>360 - TOL && map.angleToGoal() < TOL || (heading < TOL && map.angleToGoal() > 360 - TOL))) {
+                if(heading-map.angleToGoal()>0) {
                     motorRT.setPower(power);
                     motorRB.setPower(power);
                     motorLT.setPower(-power);
@@ -296,8 +306,6 @@ public class Autonomous extends OpMode {
         telemetry.addData("climber pos: ", climber.getPosition());
         telemetry.addData("Ultrasonic: ", usmLevel);
         telemetry.addData("aTimeStart: ", aTimeStart);
-        telemetry.addData("aDistToTrav ", aDistToTrav);
-        telemetry.addData("aDistTrav ", aDistTrav);
 
     }
 
