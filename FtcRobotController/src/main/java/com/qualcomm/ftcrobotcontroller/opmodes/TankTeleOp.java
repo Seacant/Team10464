@@ -44,6 +44,8 @@ public class TankTeleOp extends OpMode {
         motorArmExtender = hardwareMap.dcMotor.get("motor_S");
         //motorClaw = hardwareMap.dcMotor.get("motor_c");
 
+        motorRight.setDirection(DcMotor.Direction.FORWARD);
+        motorRightB.setDirection(DcMotor.Direction.FORWARD);
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
         motorLeftB.setDirection(DcMotor.Direction.REVERSE);
         
