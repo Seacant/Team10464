@@ -180,7 +180,7 @@ public class Autonomous extends OpMode {
                     gameState = 3;  // Move to the next stage.
                 }
                 aPrefDir = true; //left. We need to be extremely careful with crossing over midline.
-                if(map.distanceToGoal()>1.5) avoid();
+                //if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
                 map.setGoal(10.25, 6);
@@ -200,14 +200,14 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 5: // move to ramp alignment spot
-                map.setGoal(8.5,7);
+                map.setGoal(8.5, 7);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
                     moveState = 0;  // stop the robot
                     gameState = 6;  // Move to the next stage.
                 }
                 aPrefDir = false; //Right is better for us.
-                avoid(); //may act erratically since we start on the wall.
+                //avoid(); //may act erratically since we start on the wall.
                 break;
             case 6: //align with ramp, and gun it up.
                 map.setGoal(53,45);
@@ -216,11 +216,10 @@ public class Autonomous extends OpMode {
             case 8: // Move Around.
                 aTimeStart = sTime;
                 aDistTrav = 0;
-                aDistToTrav = map.distanceToGoal() / 8; //Arbitrary denominator. Change to fit testing.
                 gameState = 9;
             case 9:
                 minHead = heading-map.angleToGoal();
-                if(aTimeStart > 2) {
+                if(aTimeStart + 2 < sTime) {
                     moveState = 3;
                     if(usmLevel > 30){
                         aX = map.getRobotX();
@@ -236,7 +235,7 @@ public class Autonomous extends OpMode {
                 if(map.distanceToGoal() <= .1){
                     gameState = metaGameState;
                 }
-                avoid(); //In case something is encountered on our new path, restart calculations.
+                //avoid(); //In case something is encountered on our new path, restart calculations.
                 break;
         }
         switch(moveState){
@@ -263,16 +262,16 @@ public class Autonomous extends OpMode {
             case 2:
                 //Case Two is 'turn towards'.
                 power = 0.25;
-                if(heading-map.angleToGoal()>0) {
-                    motorRT.setPower(power);
-                    motorRB.setPower(power);
-                    motorLT.setPower(-power);
-                    motorLB.setPower(-power);
-                }else{
+                if(heading-map.angleToGoal()<0 || Math.abs(heading-map.angleToGoal())>180) {
                     motorRT.setPower(-power);
                     motorRB.setPower(-power);
                     motorLT.setPower(power);
                     motorLB.setPower(power);
+                }else{
+                    motorRT.setPower(power);
+                    motorRB.setPower(power);
+                    motorLT.setPower(-power);
+                    motorLB.setPower(-power);
                 }
                 break;
             case 3:
@@ -302,10 +301,12 @@ public class Autonomous extends OpMode {
         telemetry.addData("robot x,y ",map.getRobotX()+","+map.getRobotY());
         telemetry.addData("angle to goal ",map.angleToGoal());
         telemetry.addData("dist from goal ",map.distanceToGoal());
-        telemetry.addData("moveState & gameState ",moveState + " " + gameState);
-        telemetry.addData("climber pos: ", climber.getPosition());
-        telemetry.addData("Ultrasonic: ", usmLevel);
-        telemetry.addData("aTimeStart: ", aTimeStart);
+        telemetry.addData("Encoder Data :",(motorLB.getCurrentPosition()+motorRB.getCurrentPosition()+motorLT.getCurrentPosition()+motorRT.getCurrentPosition())/4);
+        telemetry.addData("LMB :",motorLB.getCurrentPosition());
+        telemetry.addData("RMB :",motorRB.getCurrentPosition());
+        telemetry.addData("LMT :",motorLT.getCurrentPosition());
+        telemetry.addData("RMT :",motorRT.getCurrentPosition());
+
 
     }
 
