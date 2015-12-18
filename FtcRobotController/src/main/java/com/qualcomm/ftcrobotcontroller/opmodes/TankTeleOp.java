@@ -18,8 +18,8 @@ public class TankTeleOp extends OpMode {
     Servo climber;
     Servo rightSwing;
     Servo leftSwing;
-    //Servo leftBlocker;
-    //Servo rightBlocker;
+    Servo leftBlocker;
+    Servo rightBlocker;
     /**
      * Constructor
      */
@@ -52,8 +52,8 @@ public class TankTeleOp extends OpMode {
         climber = hardwareMap.servo.get("climber");
         rightSwing = hardwareMap.servo.get("swing_r");
         leftSwing = hardwareMap.servo.get("swing_l");
-        //rightBlocker = hardwareMap.servo.get("right_block");
-        //leftBlocker = hardwareMap.servo.get("left_block");
+        rightBlocker = hardwareMap.servo.get("right_block");
+        leftBlocker = hardwareMap.servo.get("left_block");
 
     }
 
@@ -68,10 +68,10 @@ public class TankTeleOp extends OpMode {
         motorArm.setPower(0);
         
         if(gamepad1.a){
-            //rightBlocker.setPosition(rightBlocker.getPosition()<.5?.8:.2); //needs to be tested
+            rightBlocker.setPosition(rightBlocker.getPosition()<.5?.8:.2); //needs to be tested
         }
         if(gamepad1.b){
-            //leftBlocker.setPosition(leftBlocker.getPosition()<.5?.8:.2); //needs to be tested
+            leftBlocker.setPosition(leftBlocker.getPosition()<.5?.8:.2); //needs to be tested
         }
 
         if(gamepad1.left_bumper){
@@ -89,24 +89,25 @@ public class TankTeleOp extends OpMode {
         }
         
         if(gamepad1.dpad_up) {
-            motorArm.setPower(.3);
+            motorArm.setPower(.8);
         }
         if(gamepad1.dpad_down) {
-            motorArm.setPower(-.3);
+            motorArm.setPower(-.8);
         }
         if(gamepad1.dpad_left){
-            leftSwing.setPosition(leftSwing.getPosition()<.5?1:0);
+            leftSwing.setPosition(leftSwing.getPosition()<.5?.8:.2);
         }
 
         if(gamepad1.dpad_right){
-            rightSwing.setPosition(rightSwing.getPosition()<.5?1:0);
+            rightSwing.setPosition(rightSwing.getPosition()<.5?.8:.2);
         }
 
         if(gamepad1.x){
-            climber.setPosition(1);
-        }   
+            climber.setPosition(.8);
+        }
+
         if(gamepad1.y){
-            climber.setPosition(0);
+            climber.setPosition(.2);
         }
 
         motorRight.setPower(gamepad1.right_stick_y);
