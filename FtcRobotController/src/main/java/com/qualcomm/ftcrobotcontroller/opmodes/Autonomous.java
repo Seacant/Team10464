@@ -182,7 +182,7 @@ public class Autonomous extends OpMode {
                     gameState = 3;  // Move to the next stage.
                 }
                 aPrefDir = true; //left. We need to be extremely careful with crossing over midline.
-                if(map.distanceToGoal()>1.5) avoid();
+                //if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
                 map.setGoal(10.25, 6);
@@ -202,14 +202,14 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 5: // move to ramp alignment spot
-                map.setGoal(8.5, 7);
+                map.setGoal(8, 8);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
                     moveState = 0;  // stop the robot
                     gameState = 6;  // Move to the next stage.
                 }
                 aPrefDir = false; //Right is better for us.
-                avoid(); //may act erratically since we start on the wall.
+                //avoid(); //may act erratically since we start on the wall.
                 break;
             case 6: //align with ramp, and gun it up.
                 map.setGoal(53,45);
@@ -237,7 +237,7 @@ public class Autonomous extends OpMode {
                 if(map.distanceToGoal() <= .1){
                     gameState = metaGameState;
                 }
-                avoid(); //In case something is encountered on our new path, restart calculations.
+                //avoid(); //In case something is encountered on our new path, restart calculations.
                 break;
         }
         switch(moveState){
@@ -264,7 +264,18 @@ public class Autonomous extends OpMode {
             case 2:
                 //Case Two is 'turn towards'.
                 power = 0.25;
-                if((heading + 180) % 360 > map.angleToGoal()){
+                boolean turnRight;
+
+                if(heading<=180){
+                    turnRight = heading<=map.angleToGoal()&&heading+180>=map.angleToGoal();
+                }
+
+                else  {
+                    turnRight = !                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              (heading>=map.angleToGoal()&&heading-180<=map.angleToGoal());
+                }
+
+                if (turnRight) {
+
                     motorRT.setPower(-power);
                     motorRB.setPower(-power);
                     motorLT.setPower(power);
@@ -307,7 +318,7 @@ public class Autonomous extends OpMode {
         telemetry.addData("LMB :",motorLB.getCurrentPosition());
         telemetry.addData("RMB :",motorRB.getCurrentPosition());
         telemetry.addData("LMT :",motorLT.getCurrentPosition());
-        telemetry.addData("RMT :",motorRT.getCurrentPosition());
+        telemetry.addData("Climber pos :",climber.getPosition());
 
 
     }
