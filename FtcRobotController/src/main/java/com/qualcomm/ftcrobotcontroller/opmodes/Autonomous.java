@@ -60,7 +60,6 @@ public class Autonomous extends OpMode {
     //-1 = not set; else, use this as the gamestate to 'get back to', after we finish avoidance
     double aTimeStart; //AvoidTimeStart.
     double aDistTrav;  //Avoidance Distance Traveled.
-    double aDistToTrav; //Avoidance Distance To Travel.
     boolean aPrefDir; //Avoidance Preferred direction. True=left & False=right
     double minHead;
     double aX;
@@ -112,6 +111,10 @@ public class Autonomous extends OpMode {
         swingLeft = hardwareMap.servo.get("swing_l");
         swingRight = hardwareMap.servo.get("swing_r");
 
+        climber.setPosition(1);
+        swingLeft.setPosition(.8);
+        swingRight.setPosition(.8);
+
         color = hardwareMap.colorSensor.get("color");
         USM = hardwareMap.ultrasonicSensor.get("sonic");
         gyro = hardwareMap.gyroSensor.get("gyro");
@@ -132,10 +135,10 @@ public class Autonomous extends OpMode {
             gameState = 8; //avoid
         }
     }
-    public void linedUp(int o, int n){
-        if(Math.abs(heading-map.angleToGoal()) < TOL || (heading>360 - TOL && map.angleToGoal() < TOL || (heading < TOL && map.angleToGoal() > 360 - TOL))){
+    public void linedUp(int o, int n) {
+        if (Math.abs(heading - map.angleToGoal()) < TOL || (heading > 360 - TOL && map.angleToGoal() < TOL || (heading < TOL && map.angleToGoal() > 360 - TOL))) {
             moveState = o;
-        }else{
+        } else {
             moveState = n;
         }
     }
@@ -159,7 +162,6 @@ public class Autonomous extends OpMode {
                 //our teammate to GTFO, avoiding unnecessary beginning-game collisions. It will also
                 //give our gyro a second to calibrate.
                 if(getRuntime() > 5 || !gyro.isCalibrating()) {
-                    climber.setPosition(1);
                     gameState = 1;
                 }
                 break;
@@ -180,7 +182,7 @@ public class Autonomous extends OpMode {
                     gameState = 3;  // Move to the next stage.
                 }
                 aPrefDir = true; //left. We need to be extremely careful with crossing over midline.
-                //if(map.distanceToGoal()>1.5) avoid();
+                if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
                 map.setGoal(10.25, 6);
@@ -207,7 +209,7 @@ public class Autonomous extends OpMode {
                     gameState = 6;  // Move to the next stage.
                 }
                 aPrefDir = false; //Right is better for us.
-                //avoid(); //may act erratically since we start on the wall.
+                avoid(); //may act erratically since we start on the wall.
                 break;
             case 6: //align with ramp, and gun it up.
                 map.setGoal(53,45);
@@ -235,7 +237,7 @@ public class Autonomous extends OpMode {
                 if(map.distanceToGoal() <= .1){
                     gameState = metaGameState;
                 }
-                //avoid(); //In case something is encountered on our new path, restart calculations.
+                avoid(); //In case something is encountered on our new path, restart calculations.
                 break;
         }
         switch(moveState){
@@ -262,12 +264,12 @@ public class Autonomous extends OpMode {
             case 2:
                 //Case Two is 'turn towards'.
                 power = 0.25;
-                if(heading-map.angleToGoal()<0 || Math.abs(heading-map.angleToGoal())>180) {
+                if((heading + 180) % 360 > map.angleToGoal()){
                     motorRT.setPower(-power);
                     motorRB.setPower(-power);
                     motorLT.setPower(power);
                     motorLB.setPower(power);
-                }else{
+                } else {
                     motorRT.setPower(power);
                     motorRB.setPower(power);
                     motorLT.setPower(-power);
