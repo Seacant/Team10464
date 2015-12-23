@@ -31,6 +31,7 @@ public class Autonomous extends OpMode {
     DcMotor motorLB;
     DcMotor motorA;
     DcMotor motorS;
+    DcMotor motorC;
     GyroSensor gyro;
     ColorSensor color;
     OpticalDistanceSensor ODSC;
@@ -107,6 +108,7 @@ public class Autonomous extends OpMode {
 
         motorA = hardwareMap.dcMotor.get("motor_A");
         motorS = hardwareMap.dcMotor.get("motor_S");
+        motorC = hardwareMap.dcMotor.get("motor_C");
         climber = hardwareMap.servo.get("climber");
         swingLeft = hardwareMap.servo.get("swing_l");
         swingRight = hardwareMap.servo.get("swing_r");
