@@ -77,7 +77,7 @@ public class TankTeleOp extends OpMode {
         if(gamepad1.b){
             leftBlocker.setPosition(leftBlocker.getPosition()<.5?1:.3);
         }
-
+//Why Juan
         if(gamepad1.left_bumper){
             motorClaw.setPower(1); // Needs to be fixed -- Should operate ball collection
         }
