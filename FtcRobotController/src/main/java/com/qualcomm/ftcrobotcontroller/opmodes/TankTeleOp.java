@@ -71,13 +71,13 @@ public class TankTeleOp extends OpMode {
         motorClaw.setPower(0);
         
         if(gamepad1.a){
-            rightBlocker.setPosition(rightBlocker.getPosition()<.5?1:0);//Moves both blockers
+            rightBlocker.setPosition(rightBlocker.getPosition()<.5?1:.2);//Moves both blockers
 
         }
         if(gamepad1.b){
             leftBlocker.setPosition(leftBlocker.getPosition()<.5?1:.3);
         }
-//Why Juan
+
         if(gamepad1.left_bumper){
             motorClaw.setPower(1); // Needs to be fixed -- Should operate ball collection
         }
@@ -103,11 +103,11 @@ public class TankTeleOp extends OpMode {
         }
 
         if(gamepad1.dpad_right){
-            rightSwing.setPosition(rightSwing.getPosition()<.5?.75:.25);
+            rightSwing.setPosition(rightSwing.getPosition()<.65?.75:.55); //1 Up, 0 Down
         }
 
         if(gamepad1.x){
-            climber.setPosition(climber.getPosition()>.5?.2:.8); //moves climber
+            climber.setPosition(climber.getPosition()>.5?0:1); //moves climber
         }
 
         if(gamepad1.y){
