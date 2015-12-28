@@ -182,7 +182,7 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 2: //Move to beacon
-                map.setGoal(9.25, 6);
+                map.setGoal(9.25, 5);
                 //Checks our heading.
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
@@ -193,16 +193,16 @@ public class Autonomous extends OpMode {
                 //if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
-                map.setGoal(10.25, 6);
+                map.setGoal(10.25, 5);
                 //Checks our heading.
                 linedUp(1,2);
-                if(map.distanceToGoal()<=.1 || usmLevel < 5) {
+                if(map.distanceToGoal()<=.1) {
                     moveState = 0;  // stop the robot
                     gameState = 4;  // Move to the next stage.
                 }
                 break;
             case 4: // line up, and drop climbers
-                map.setGoal(11,6);
+                map.setGoal(11,5);
                 linedUp(5,2);
                 if(Math.abs(climber.getPosition()-.25) < .02){
                     moveState = 0;
@@ -210,9 +210,11 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 5: // move to ramp alignment spot
-                map.setGoal(8, 8);
+                map.setGoal(9, 7);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
+                    blockLeft.setPosition(0);
+                    blockRight.setPosition(1);
                     moveState = 0;  // stop the robot
                     gameState = 6;  // Move to the next stage.
                 }
