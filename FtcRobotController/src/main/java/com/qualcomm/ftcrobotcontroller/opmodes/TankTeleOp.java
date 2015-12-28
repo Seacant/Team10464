@@ -45,7 +45,6 @@ public class TankTeleOp extends OpMode {
         motorArmExtender = hardwareMap.dcMotor.get("motor_S");
         motorClaw = hardwareMap.dcMotor.get("motor_C");
 
-        motorClaw.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 
         motorRight.setDirection(DcMotor.Direction.FORWARD);
         motorRightB.setDirection(DcMotor.Direction.FORWARD);
@@ -55,8 +54,8 @@ public class TankTeleOp extends OpMode {
         climber = hardwareMap.servo.get("climber");
         rightSwing = hardwareMap.servo.get("swing_r");
         leftSwing = hardwareMap.servo.get("swing_l");
-        rightBlocker = hardwareMap.servo.get("right_block");
-        leftBlocker = hardwareMap.servo.get("left_block");
+        rightBlocker = hardwareMap.servo.get("block_r");
+        leftBlocker = hardwareMap.servo.get("block_l");
 
     }
 
@@ -72,11 +71,11 @@ public class TankTeleOp extends OpMode {
         motorClaw.setPower(0);
         
         if(gamepad1.a){
-            rightBlocker.setPosition(rightBlocker.getPosition()<.5?.8:.2);//Moves both blockers
-            leftBlocker.setPosition(leftBlocker.getPosition()<.5?.8:.2);
+            rightBlocker.setPosition(rightBlocker.getPosition()<.5?1:0);//Moves both blockers
+
         }
         if(gamepad1.b){
-            rightSwing.setPosition(rightSwing.getPosition()<.5?.8:.2);//Moves right swing
+            leftBlocker.setPosition(leftBlocker.getPosition()<.5?1:.3);
         }
 
         if(gamepad1.left_bumper){
@@ -87,30 +86,28 @@ public class TankTeleOp extends OpMode {
         }
 
         if(gamepad1.left_trigger>0) {
-            motorArmExtender.setPower(gamepad1.left_trigger);
+            motorArmExtender.setPower(-gamepad1.left_trigger);
         }
         if(gamepad1.right_trigger>0){
-            motorArmExtender.setPower(-gamepad1.right_trigger);
+            motorArmExtender.setPower(gamepad1.right_trigger);
         }
         
-        if(gamepad1.dpad_up) {
-            motorArm.setPower(1);
+        if(gamepad1.dpad_up){
+            motorArm.setPower(.5);
         }
-        if(gamepad1.dpad_down) {
-            motorArm.setPower(-1);
+        if(gamepad1.dpad_down){
+            motorArm.setPower(-0.5);
         }
         if(gamepad1.dpad_left){
             //leftSwing.setPosition(leftSwing.getPosition()<.5?.8:.2);
         }
 
         if(gamepad1.dpad_right){
-            //rightSwing.setPosition(rightSwing.getPosition()<.5?.8:.2);
+            rightSwing.setPosition(rightSwing.getPosition()<.5?.75:.25);
         }
 
         if(gamepad1.x){
             climber.setPosition(climber.getPosition()>.5?.2:.8); //moves climber
-            //climber.setPosition(.8);
-            //climber.setPosition(.2);
         }
 
         if(gamepad1.y){

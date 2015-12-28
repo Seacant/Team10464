@@ -40,8 +40,10 @@ public class Autonomous extends OpMode {
     UltrasonicSensor USM; //UltraSonic Middle
     Servo climber;
     Servo swingLeft;
+    Servo blockRight;
+    Servo blockLeft;
     Servo swingRight;
-       
+
 
     //We stateful now, boys.
     int gameState;
@@ -112,10 +114,14 @@ public class Autonomous extends OpMode {
         climber = hardwareMap.servo.get("climber");
         swingLeft = hardwareMap.servo.get("swing_l");
         swingRight = hardwareMap.servo.get("swing_r");
+        blockRight = hardwareMap.servo.get("block_r");
+        blockLeft = hardwareMap.servo.get("block_l");
 
         climber.setPosition(1);
         swingLeft.setPosition(.8);
         swingRight.setPosition(.8);
+        blockRight.setPosition(0);
+        blockLeft.setPosition(1);
 
         color = hardwareMap.colorSensor.get("color");
         USM = hardwareMap.ultrasonicSensor.get("sonic");
@@ -268,12 +274,12 @@ public class Autonomous extends OpMode {
                 power = 0.25;
                 boolean turnRight;
 
-                if(heading<=180){
-                    turnRight = heading<=map.angleToGoal()&&heading+180>=map.angleToGoal();
+                if(heading<=180) {
+                    turnRight = heading <= map.angleToGoal() && heading + 180 >= map.angleToGoal();
                 }
 
-                else  {
-                    turnRight = !                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              (heading>=map.angleToGoal()&&heading-180<=map.angleToGoal());
+                else {
+                    turnRight = !(heading >= map.angleToGoal() && heading - 180 <= map.angleToGoal());
                 }
 
                 if (turnRight) {
