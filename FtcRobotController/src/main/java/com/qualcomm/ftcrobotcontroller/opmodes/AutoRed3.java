@@ -12,10 +12,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by Travis on 10/3/2015.
- * Team 10464 Autonomous program
+ * Team 10464 AutoBlue6 program
  */
 
-public class Autonomous extends OpMode {
+public class AutoRed3 extends OpMode {
     public final double TOL = 7; //tolerance for heading calculations
     public final double DEGREES_TO_FEET = 0.0004659239004629629629629629629629629629629629629629;
     // ((204.5*.03937))/(1440*12) = Constant for converting encoder = ^^^^^^^^
@@ -33,11 +33,11 @@ public class Autonomous extends OpMode {
     DcMotor motorS;
     DcMotor motorC;
     GyroSensor gyro;
-  //  ColorSensor color;
+    //  ColorSensor color;
     //OpticalDistanceSensor ODSC;
     //OpticalDistanceSensor ODSR;
     //OpticalDistanceSensor ODSL;
-  //  UltrasonicSensor USM; //UltraSonic Middle
+    //  UltrasonicSensor USM; //UltraSonic Middle
     Servo climber;
     Servo swingLeft;
     Servo blockRight;
@@ -48,6 +48,8 @@ public class Autonomous extends OpMode {
     //We stateful now, boys.
     int gameState;
     int moveState;
+
+    int startPos = 9;
 
     double power;
     double sTime; //StartTime
@@ -64,6 +66,7 @@ public class Autonomous extends OpMode {
     double aTimeStart; //AvoidTimeStart.
     double aDistTrav;  //Avoidance Distance Traveled.
     boolean aPrefDir; //Avoidance Preferred direction. True=left & False=right
+    double climbTime;
     double minHead;
     double aX;
     double aY;
@@ -80,12 +83,12 @@ public class Autonomous extends OpMode {
 //      {3,3,3,0,0,0,0,0,0,0,0,0}
 //      {3,3,3,3,0,0,0,0,0,0,0,0}
 
-    Map map = new Map("Blue",6); //this map object will allow for easy manipulations.
+    Map map = new Map("Blue",startPos); //this map object will allow for easy manipulations.
 
     //GYRO
     double xVal,yVal,zVal,heading;
 
-    public Autonomous() {
+    public AutoRed3() {
         //not used in the history of ever.
     }
 
@@ -123,7 +126,7 @@ public class Autonomous extends OpMode {
         blockRight.setPosition(0);
         blockLeft.setPosition(1);
 
-       // color = hardwareMap.colorSensor.get("color");
+        // color = hardwareMap.colorSensor.get("color");
         //USM = hardwareMap.ultrasonicSensor.get("sonic");
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
@@ -165,7 +168,7 @@ public class Autonomous extends OpMode {
         dDist = cDist-lDist;
         heading = gyro.getHeading();
 
-      //  usmLevel = USM.getUltrasonicLevel(); //Uses cm
+        //  usmLevel = USM.getUltrasonicLevel(); //Uses cm
 
         //Goal-specific logic
         switch(gameState){
@@ -178,16 +181,16 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 1: //Move up before turning to beacon
-                map.setGoal(6,9);
+                map.setGoal(startPos,9.5);//6,9   Use
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
                     moveState = 0;  // stop the robot
                     gameState = 2;  // Move to the next stage.
                 }
-               // blockerWipe();
+                // blockerWipe();
                 break;
             case 2: //Move to beacon
-                map.setGoal(9.25, 3.5);
+                map.setGoal(2.75, 3.5);//9.25, 3.5
                 //Checks our heading.
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
@@ -199,7 +202,7 @@ public class Autonomous extends OpMode {
                 //if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
-                map.setGoal(11.25, 3.5);
+                map.setGoal(.75, 3.5); // 11.25, 3.5
                 //Checks our heading.
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
@@ -209,18 +212,20 @@ public class Autonomous extends OpMode {
                 //blockerWipe();
                 break;
             case 4: // line up, and drop climbers
-                map.setGoal(12,3.5);
-                linedUp(5,2);
-                if(Math.abs(climber.getPosition()-.75) < .02){
+                map.setGoal(0,3.5); // 12, 3.5
+
+                if(Math.abs(climber.getPosition()-.75) < .02 && climbTime > 0 && getRuntime() > climbTime+1){
                     moveState = 0;
                     gameState = 5;
                 }
+
+                linedUp(5,2);
                 //blockerWipe();
                 break;
             case 5: // move to ramp alignment spot
-                map.setGoal(9.5, 6.5);
+                map.setGoal(2.5, 6.5);//9.5, 6.5
                 linedUp(1,2);
-               // blockerWipe();
+                // blockerWipe();
                 if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
                     blockLeft.setPosition(0);
                     blockRight.setPosition(1);
@@ -231,7 +236,7 @@ public class Autonomous extends OpMode {
                 //avoid(); //may act erratically since we start on the wall.
                 break;
             case 6: //align with ramp, and gun it up.
-                map.setGoal(53,45);
+                map.setGoal(-35, 45); //47,45
                 linedUp(1,2);
                 break;
             case 8: // Move Around.
@@ -323,6 +328,7 @@ public class Autonomous extends OpMode {
                 }
                 break;
             case 5:
+                if(climber.getPosition() < .5) climbTime = getRuntime();
                 climber.setPosition(.75);
                 break;
         }

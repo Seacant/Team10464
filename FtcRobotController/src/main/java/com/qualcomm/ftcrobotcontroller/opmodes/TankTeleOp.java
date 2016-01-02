@@ -70,12 +70,19 @@ public class TankTeleOp extends OpMode {
         motorArm.setPower(0);
         motorClaw.setPower(0);
         
-        if(gamepad1.a){
-            rightBlocker.setPosition(rightBlocker.getPosition()<.5?1:.2);//Moves both blockers
+        if(gamepad2.right_bumper){
+            rightBlocker.setPosition(.2);//Moves both blockers
 
         }
-        if(gamepad1.b){
-            leftBlocker.setPosition(leftBlocker.getPosition()<.5?1:.3);
+        if(gamepad2.right_trigger > 0.5){
+            rightBlocker.setPosition(1);//Moves both blockers
+
+        }
+        if(gamepad2.left_bumper){
+            leftBlocker.setPosition(1);
+        }
+        if(gamepad2.left_trigger > 0.5){
+            leftBlocker.setPosition(.3);
         }
 
         if(gamepad1.left_bumper){
@@ -85,10 +92,11 @@ public class TankTeleOp extends OpMode {
             motorClaw.setPower(-1);
         }
 
-        if(gamepad1.left_trigger>0) {
+
+        if(gamepad1.left_trigger>.1) {
             motorArmExtender.setPower(-gamepad1.left_trigger);
         }
-        if(gamepad1.right_trigger>0){
+        if(gamepad1.right_trigger>.1){
             motorArmExtender.setPower(gamepad1.right_trigger);
         }
         
@@ -98,20 +106,16 @@ public class TankTeleOp extends OpMode {
         if(gamepad1.dpad_down){
             motorArm.setPower(-0.5);
         }
-        if(gamepad1.dpad_left){
-            //leftSwing.setPosition(leftSwing.getPosition()<.5?.8:.2);
+        if(gamepad2.dpad_left){
+            rightSwing.setPosition(.75);
         }
 
-        if(gamepad1.dpad_right){
-            rightSwing.setPosition(rightSwing.getPosition()<.65?.75:.55); //1 Up, 0 Down
+        if(gamepad2.dpad_right){
+            rightSwing.setPosition(.55); //1 Up, 0 Down
         }
 
-        if(gamepad1.x){
+        if(gamepad2.y){
             climber.setPosition(climber.getPosition()>.5?0:1); //moves climber
-        }
-
-        if(gamepad1.y){
-           //Ball collection
         }
 
         motorRight.setPower(gamepad1.right_stick_y);

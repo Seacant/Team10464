@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Team 10464 AutoBlue6 program
  */
 
-public class AutoRed extends OpMode {
+public class AutoBlue62 extends OpMode {
     public final double TOL = 7; //tolerance for heading calculations
     public final double DEGREES_TO_FEET = 0.0004659239004629629629629629629629629629629629629629;
     // ((204.5*.03937))/(1440*12) = Constant for converting encoder = ^^^^^^^^
@@ -86,7 +86,7 @@ public class AutoRed extends OpMode {
     //GYRO
     double xVal,yVal,zVal,heading;
 
-    public AutoRed() {
+    public AutoBlue62() {
         //not used in the history of ever.
     }
 
@@ -178,8 +178,8 @@ public class AutoRed extends OpMode {
                     gameState = 1;
                 }
                 break;
-            case 1: //Move up before turning to beacon
-                map.setGoal(6,9);//6,9   Use
+            case 1: //Move up
+                map.setGoal(6,9.5);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
                     moveState = 0;  // stop the robot
@@ -187,8 +187,8 @@ public class AutoRed extends OpMode {
                 }
                 // blockerWipe();
                 break;
-            case 2: //Move to beacon
-                map.setGoal(2.75, 3.5);//9.25, 3.5
+            case 2: //Sweep
+                map.setGoal(10, 6.5);
                 //Checks our heading.
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
@@ -199,8 +199,8 @@ public class AutoRed extends OpMode {
                 //blockerWipe();
                 //if(map.distanceToGoal()>1.5) avoid();
                 break;
-            case 3: //move to climber deposit
-                map.setGoal(.75, 3.5); // 11.25, 3.5
+            case 3: //move to red ramp
+                map.setGoal(7, 8.5);
                 //Checks our heading.
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
@@ -209,32 +209,8 @@ public class AutoRed extends OpMode {
                 }
                 //blockerWipe();
                 break;
-            case 4: // line up, and drop climbers
-                map.setGoal(0,3.5); // 12, 3.5
-
-                if(Math.abs(climber.getPosition()-.75) < .02 && climbTime > 0 && getRuntime() > climbTime+1){
-                    moveState = 0;
-                    gameState = 5;
-                }
-
-                linedUp(5,2);
-                //blockerWipe();
-                break;
-            case 5: // move to ramp alignment spot
-                map.setGoal(2.5, 6.5);//9.5, 6.5
-                linedUp(1,2);
-                // blockerWipe();
-                if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
-                    blockLeft.setPosition(0);
-                    blockRight.setPosition(1);
-                    moveState = 0;  // stop the robot
-                    gameState = 6;  // Move to the next stage.
-                }
-                aPrefDir = false; //Right is better for us.
-                //avoid(); //may act erratically since we start on the wall.
-                break;
-            case 6: //align with ramp, and gun it up.
-                map.setGoal(-35, 45); //47,45
+            case 4: //align with ramp, and gun it up.
+                map.setGoal(47, 45);
                 linedUp(1,2);
                 break;
             case 8: // Move Around.
