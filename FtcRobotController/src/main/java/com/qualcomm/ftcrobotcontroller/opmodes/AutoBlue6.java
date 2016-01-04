@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.ftcrobotcontroller.Map;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 //import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 //import com.qualcomm.robotcore.hardware.ColorSensor;
 //import com.qualcomm.robotcore.hardware.UltrasonicSensor;
@@ -46,6 +47,7 @@ public class AutoBlue6 extends OpMode {
     Servo blockRight;
     Servo blockLeft;
     Servo swingRight;
+    TouchSensor touch;
 
 
     //We stateful now, boys.
@@ -130,7 +132,7 @@ public class AutoBlue6 extends OpMode {
         color = hardwareMap.colorSensor.get("color");
         color.enableLed(true);
 
-
+        touch = hardwareMap.touchSensor.get("touch");
 
         //USM = hardwareMap.ultrasonicSensor.get("sonic");
         gyro = hardwareMap.gyroSensor.get("gyro");
@@ -195,7 +197,7 @@ public class AutoBlue6 extends OpMode {
                // blockerWipe();
                 break;
             case 2: //Move to beacon
-                map.setGoal(9.25,3.5);
+                map.setGoal(9.25,4);
                 //Checks our heading.
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1 || (color.red() > 200 && color.green() > 200 && color.blue() > 200 )) {
@@ -207,19 +209,18 @@ public class AutoBlue6 extends OpMode {
                 //if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
-                map.setGoal(10.25,3.5);
+                map.setGoal(11.5,4);
                 //Checks our heading.
                 linedUp(1,2);
-                if(map.distanceToGoal()<=.1) {
-                    moveState = 0;  // stop the robo   t
+                if(map.distanceToGoal()<=.1 || touch.isPressed()) {
+                    moveState = 0;  // stop the robot
                     gameState = 4;  // Move to the next stage.
                 }
                 //blockerWipe();
                 break;
             case 4: // line up, and drop climbers
-                map.setGoal(12,3.5);
-
-                if(Math.abs(climber.getPosition()-.75) < .02 && climbTime > 0 && getRuntime() > climbTime+1){
+                map.setGoal(12,4);
+                if(climbTime > 0 && getRuntime() > climbTime+1){
                     moveState = 0;
                     gameState = 5;
                 }
@@ -241,7 +242,7 @@ public class AutoBlue6 extends OpMode {
                 //avoid(); //may act erratically since we start on the wall.
                 break;
             case 6: //align with ramp, and gun it up.
-                map.setGoal(47, 45);
+                map.setGoal(47, 45); // old is 47, 45
                 linedUp(1,2);
                 break;
             case 8: // Move Around.

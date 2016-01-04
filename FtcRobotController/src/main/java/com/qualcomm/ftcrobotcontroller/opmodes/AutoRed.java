@@ -188,7 +188,7 @@ public class AutoRed extends OpMode {
                 // blockerWipe();
                 break;
             case 2: //Move to beacon
-                map.setGoal(2.75, 3.5);//9.25, 3.5
+                map.setGoal(2.75, 4);//9.25, 3.5
                 //Checks our heading.
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
@@ -200,7 +200,7 @@ public class AutoRed extends OpMode {
                 //if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
-                map.setGoal(.75, 3.5); // 11.25, 3.5
+                map.setGoal(.75, 4); // 11.25, 3.5
                 //Checks our heading.
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
@@ -210,7 +210,7 @@ public class AutoRed extends OpMode {
                 //blockerWipe();
                 break;
             case 4: // line up, and drop climbers
-                map.setGoal(0,3.5); // 12, 3.5
+                map.setGoal(0,4); // 12, 3.5
 
                 if(Math.abs(climber.getPosition()-.75) < .02 && climbTime > 0 && getRuntime() > climbTime+1){
                     moveState = 0;
