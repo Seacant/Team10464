@@ -71,7 +71,7 @@ public class TankTeleOp extends OpMode {
         motorClaw.setPower(0);
         
         if(gamepad2.right_bumper){
-            rightBlocker.setPosition(.2);//Moves both blockers
+            rightBlocker.setPosition(0);//Moves both blockers
 
         }
         if(gamepad2.right_trigger > 0.5){
@@ -82,7 +82,7 @@ public class TankTeleOp extends OpMode {
             leftBlocker.setPosition(1);
         }
         if(gamepad2.left_trigger > 0.5){
-            leftBlocker.setPosition(.3);
+            leftBlocker.setPosition(0);
         }
 
         if(gamepad1.left_bumper){
@@ -107,11 +107,11 @@ public class TankTeleOp extends OpMode {
             motorArm.setPower(-0.5);
         }
         if(gamepad2.dpad_left){
-            rightSwing.setPosition(.75);
+            rightSwing.setPosition(.55);
         }
 
         if(gamepad2.dpad_right){
-            rightSwing.setPosition(.55); //1 Up, 0 Down
+            rightSwing.setPosition(0); //0 Up, 1 Down
         }
 
         if(gamepad2.y){

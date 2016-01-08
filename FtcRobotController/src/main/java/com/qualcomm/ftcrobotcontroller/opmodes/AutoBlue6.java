@@ -37,7 +37,7 @@ public class AutoBlue6 extends OpMode {
     DcMotor motorS;
     DcMotor motorC;
     GyroSensor gyro;
-    ColorSensor color;
+//    ColorSensor color;
     //OpticalDistanceSensor ODSC;
     //OpticalDistanceSensor ODSR;
     //OpticalDistanceSensor ODSL;
@@ -126,11 +126,11 @@ public class AutoBlue6 extends OpMode {
         climber.setPosition(0);
         swingLeft.setPosition(.8);
         swingRight.setPosition(.8);
-        blockRight.setPosition(.2);
+        blockRight.setPosition(0);
         blockLeft.setPosition(1);
 
-        color = hardwareMap.colorSensor.get("color");
-        color.enableLed(true);
+     //   color = hardwareMap.colorSensor.get("color");
+       // color.enableLed(true);
 
         touch = hardwareMap.touchSensor.get("touch");
 
@@ -174,7 +174,7 @@ public class AutoBlue6 extends OpMode {
         cDist = (motorLB.getCurrentPosition()+motorRB.getCurrentPosition()+motorLT.getCurrentPosition()+motorRT.getCurrentPosition())/4; //average of motor positions
         dDist = cDist-lDist;
         heading = gyro.getHeading();
-        Color.RGBToHSV(color.red(), color.green(), color.blue(), hsvValues);
+    //    Color.RGBToHSV(color.red(), color.green(), color.blue(), hsvValues);
       //  usmLevel = USM.getUltrasonicLevel(); //Uses cm
 
         //Goal-specific logic
@@ -200,7 +200,7 @@ public class AutoBlue6 extends OpMode {
                 map.setGoal(9.25,4);
                 //Checks our heading.
                 linedUp(1,2);
-                if(map.distanceToGoal()<=.1 || (color.red() > 200 && color.green() > 200 && color.blue() > 200 )) {
+                if(map.distanceToGoal()<=.1){ //|| (color.red() > 200 && color.green() > 200 && color.blue() > 200 )) {
                     moveState = 0;  // stop the robot
                     gameState = 3;  // Move to the next stage.
                 }
@@ -263,13 +263,14 @@ public class AutoBlue6 extends OpMode {
                 }
                 break;
             case 10:
-                map.setGoal(aX+Math.cos(Math.toRadians(minHead)),aY+Math.sin(Math.toRadians(minHead)));
+                map.setGoal(aX + Math.cos(Math.toRadians(minHead)), aY + Math.sin(Math.toRadians(minHead)));
                 if(map.distanceToGoal() <= .1){
                     gameState = metaGameState;
                 }
                 //avoid(); //In case something is encountered on our new path, restart calculations.
                 break;
         }
+        if(getRuntime() > 25){moveState = 0; gameState = 111;}
         switch(moveState){
             case 0:
                 //Case zero is 'stop'
@@ -346,9 +347,6 @@ public class AutoBlue6 extends OpMode {
         telemetry.addData("angle to goal ",map.angleToGoal());
         telemetry.addData("dist from goal ",map.distanceToGoal());
         telemetry.addData("Encoder Data :",(motorLB.getCurrentPosition()+motorRB.getCurrentPosition()+motorLT.getCurrentPosition()+motorRT.getCurrentPosition())/4);
-        telemetry.addData("Red :",color.red());
-        telemetry.addData("Green :",color.green());
-        telemetry.addData("Blue :",color.blue());
         telemetry.addData("Climber pos :",climber.getPosition());
 
 
