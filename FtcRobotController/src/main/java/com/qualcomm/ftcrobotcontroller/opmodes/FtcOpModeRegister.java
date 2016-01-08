@@ -46,14 +46,12 @@ public class FtcOpModeRegister implements OpModeRegister {
    * @param manager op mode manager
    */
   public void register(OpModeManager manager) {
-
-    manager.register("TeleOp", TankTeleOp.class);
-    manager.register("B6", AutoBlue6.class);
-    manager.register("B62", AutoBlue62.class);
-    manager.register("R6", AutoRed.class);
-    manager.register("R3", AutoRed3.class);
-    manager.register("B3", AutoBlue3.class);
-    manager.register("colTest", ColorSensorDriver.class);
-
+      manager.register("TeleOp", TankTeleOp.class);
+      manager.register("Blue 6", AutoBlue6.class);
+      manager.register("Red 6", AutoRed.class);
+      manager.register("Blue 62", AutoBlue62.class);
+      manager.register("Red 62", AutoRed62.class);
+      manager.register("Blue 3", AutoBlue3.class);
+      manager.register("Red 3", AutoRed3.class);
   }
 }
