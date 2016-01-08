@@ -154,9 +154,13 @@ public class AutoRed extends OpMode {
                 }
                 break;
             case 5: // Back up to avoid wall while turning
-                map.setGoal(11,4);
-                linedUp(3,2);
-                if(climbTime > 0 && getRuntime() > climbTime + 1){
+                map.setGoal(11, 4);
+                if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
+                    moveState = 3;
+                } else {
+                    moveState = 2;
+                }
+                if(map.distanceToGoal() <= .1){
                     moveState = 0;
                     gameState = 6;
                 }

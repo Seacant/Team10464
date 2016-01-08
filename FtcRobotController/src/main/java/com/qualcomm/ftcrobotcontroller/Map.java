@@ -50,4 +50,6 @@ public class Map {
         robotX -= feet * Math.cos(Math.toRadians((heading + 450) % 360));
         robotY -= feet * Math.sin(Math.toRadians((heading + 450) % 360));
     }
+
+    public double angleToGoalRev(){return ((angleToGoal() + 180) % 360);}
 }
