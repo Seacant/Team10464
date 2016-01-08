@@ -5,14 +5,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.ftcrobotcontroller.Map;
 import com.qualcomm.robotcore.hardware.Servo;
-//import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-//import com.qualcomm.robotcore.hardware.ColorSensor;
-//import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-
 
 /**
  * Created by Travis on 10/3/2015.
- * Team 10464 AutoBlue6 program
+ * Team 10464 Autonomous program
  */
 
 public class AutoRed extends OpMode {
@@ -33,11 +29,6 @@ public class AutoRed extends OpMode {
     DcMotor motorS;
     DcMotor motorC;
     GyroSensor gyro;
-    //  ColorSensor color;
-    //OpticalDistanceSensor ODSC;
-    //OpticalDistanceSensor ODSR;
-    //OpticalDistanceSensor ODSL;
-    //  UltrasonicSensor USM; //UltraSonic Middle
     Servo climber;
     Servo swingLeft;
     Servo blockRight;
@@ -50,68 +41,38 @@ public class AutoRed extends OpMode {
     int moveState;
 
     double power;
-    double sTime; //StartTime
-    double eTime; //EndTime
-    double dTime; //DeltaTime
-    int cDist; //current distance (from encoder) reading
-    int lDist; //last distance (from encoder) reading
+    double heading;
+    int cDist, lDist;
     int dDist; //the aforementioned difference (cDist-lDist) **CAN BE NEGATIVE
-
-    //Avoidance vars
-    double usmLevel;
-    int metaGameState = -1; //GameState is not always truthful, since we enter a new state when moving around.
-    //-1 = not set; else, use this as the gamestate to 'get back to', after we finish avoidance
-    double aTimeStart; //AvoidTimeStart.
-    double aDistTrav;  //Avoidance Distance Traveled.
-    boolean aPrefDir; //Avoidance Preferred direction. True=left & False=right
+    double tDiff; // getRuntime() does this really annoying thing where it counts init time, so I
+    // mark the first time I exit init, and override getRuntime to return that instead
     double climbTime;
-    double minHead;
-    double aX;
-    double aY;
-//Map visualization
-//      {0,0,0,0,0,0,0,0,3,3,3,3}
-//      {0,0,0,0,0,0,0,0,0,3,3,3}
-//      {0,0,0,0,0,0,0,0,0,0,3,3}
-//      {0,0,0,0,0,0,0,0,0,0,0,3}
-//      {0,0,0,0,0,0,0,0,0,0,0,0}
-//      {0,0,0,0,0,0,0,0,0,0,0,0}
-//      {0,0,0,0,0,0,0,0,0,0,0,0}
-//      {3,0,0,0,0,0,0,0,0,0,0,0}
-//      {3,3,0,0,0,0,0,0,0,0,0,0}
-//      {3,3,3,0,0,0,0,0,0,0,0,0}
-//      {3,3,3,3,0,0,0,0,0,0,0,0}
 
-    Map map = new Map("Blue",6); //this map object will allow for easy manipulations.
 
-    //GYRO
-    double xVal,yVal,zVal,heading;
+    int startPos = 6;
+    Map map = new Map(startPos); //this map object will allow for easy manipulations.
+
 
     public AutoRed() {
         //not used in the history of ever.
     }
 
-    /*
-     * Code to run when the op mode is first enabled goes here
-     *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
-     */
     @Override
     public void init() {
         motorRT = hardwareMap.dcMotor.get("motor_RT");
         motorRB = hardwareMap.dcMotor.get("motor_RB");
-
         motorLT = hardwareMap.dcMotor.get("motor_LT");
         motorLB = hardwareMap.dcMotor.get("motor_LB");
 
-        motorLT.setDirection(DcMotor.Direction.FORWARD);
-        motorLB.setDirection(DcMotor.Direction.FORWARD);
-
         motorRT.setDirection(DcMotor.Direction.REVERSE);
         motorRB.setDirection(DcMotor.Direction.REVERSE);
+        motorLT.setDirection(DcMotor.Direction.FORWARD);
+        motorLB.setDirection(DcMotor.Direction.FORWARD);
 
         motorA = hardwareMap.dcMotor.get("motor_A");
         motorS = hardwareMap.dcMotor.get("motor_S");
         motorC = hardwareMap.dcMotor.get("motor_C");
+
         climber = hardwareMap.servo.get("climber");
         swingLeft = hardwareMap.servo.get("swing_l");
         swingRight = hardwareMap.servo.get("swing_r");
@@ -124,25 +85,8 @@ public class AutoRed extends OpMode {
         blockRight.setPosition(0);
         blockLeft.setPosition(1);
 
-        // color = hardwareMap.colorSensor.get("color");
-        //USM = hardwareMap.ultrasonicSensor.get("sonic");
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
-    }
-
-    /*
-     * This method will be called repeatedly in a loop
-     *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
-     */
-    public void avoid(){ //always run right before break statement, to prevent over-revision.
-        if(usmLevel < 30.48){ //If something is ~a foot away, try to move around it.
-            moveState = 0; // We always set moveState to 0 when changing gameStates.
-            if(gameState<9) { //technically, gameState 10 can be here, and I want to reserve meta's integrity.
-                metaGameState = gameState;
-            }
-            gameState = 8; //avoid
-        }
     }
     public void linedUp(int o, int n) {
         if (Math.abs(heading - map.angleToGoal()) < TOL || (heading > 360 - TOL && map.angleToGoal() < TOL || (heading < TOL && map.angleToGoal() > 360 - TOL))) {
@@ -151,117 +95,93 @@ public class AutoRed extends OpMode {
             moveState = n;
         }
     }
-    public void blockerWipe(){
-        blockRight.setPosition(blockRight.getPosition()>.1?0:.2); //right down is 0 ; left down is 1;
-        blockLeft.setPosition(blockLeft.getPosition()>.9?.8:1); //right down is 0 ; left down is 1;
+
+    @Override
+    public double getRuntime(){
+        return super.getRuntime()-tDiff;
     }
+
     @Override
     public void loop() {
-        //Information gathering phase
-        sTime = eTime;
-        eTime = getRuntime();
-        dTime = eTime - sTime;
-        lDist = cDist;
-        cDist = (motorLB.getCurrentPosition()+motorRB.getCurrentPosition()+motorLT.getCurrentPosition()+motorRT.getCurrentPosition())/4; //average of motor positions
-        dDist = cDist-lDist;
         heading = gyro.getHeading();
+        lDist = cDist;
+        cDist = ( motorLB.getCurrentPosition()
+                + motorRB.getCurrentPosition()
+                + motorLT.getCurrentPosition()
+                + motorRT.getCurrentPosition()
+        ) / 4;
+        dDist = cDist - lDist;
 
-        //  usmLevel = USM.getUltrasonicLevel(); //Uses cm
 
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
-                //It was recommended to us that we should wait at the gate for a few second to allow
-                //our teammate to leave, avoiding unnecessary beginning-game collisions. It will also
-                //give our gyro a second to calibrate.
+                if(tDiff == 0){tDiff = getRuntime();}
                 if(getRuntime() > 5 || !gyro.isCalibrating()) {
                     gameState = 1;
                 }
                 break;
             case 1: //Move up before turning to beacon
-                map.setGoal(6,9);//6,9   Use
+                map.setGoal(startPos,9);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
-                    moveState = 0;  // stop the robot
-                    gameState = 2;  // Move to the next stage.
+                    moveState = 0;
+                    gameState = 2;
                 }
-                // blockerWipe();
                 break;
             case 2: //Move to beacon
-                map.setGoal(2.75, 4);//9.25, 3.5
-                //Checks our heading.
+                map.setGoal(2.75,4);
                 linedUp(1,2);
-                if(map.distanceToGoal()<=.1) {
-                    moveState = 0;  // stop the robot
-                    gameState = 3;  // Move to the next stage.
+                if(map.distanceToGoal()<=.1){
+                    moveState = 0;
+                    gameState = 3;
                 }
-                aPrefDir = true; //left. We need to be extremely careful with crossing over midline.
-                //blockerWipe();
-                //if(map.distanceToGoal()>1.5) avoid();
                 break;
             case 3: //move to climber deposit
-                map.setGoal(.75, 4); // 11.25, 3.5
-                //Checks our heading.
+                map.setGoal(.5,4);
                 linedUp(1,2);
-                if(map.distanceToGoal()<=.1) {
-                    moveState = 0;  // stop the robot
-                    gameState = 4;  // Move to the next stage.
+                if(map.distanceToGoal() <= .1) {
+                    moveState = 0;
+                    gameState = 4;
                 }
-                //blockerWipe();
                 break;
             case 4: // line up, and drop climbers
-                map.setGoal(0,4); // 12, 3.5
-
-                if(Math.abs(climber.getPosition()-.75) < .02 && climbTime > 0 && getRuntime() > climbTime+1){
+                map.setGoal(0, 4);
+                linedUp(5,2);
+                if(climbTime > 0 && getRuntime() > climbTime+1){
                     moveState = 0;
                     gameState = 5;
                 }
-
-                linedUp(5,2);
-                //blockerWipe();
                 break;
-            case 5: // move to ramp alignment spot
-                map.setGoal(2.5, 6.5);//9.5, 6.5
+            case 5: // Back up to avoid wall while turning
+                map.setGoal(11,4);
+                linedUp(3,2);
+                if(climbTime > 0 && getRuntime() > climbTime + 1){
+                    moveState = 0;
+                    gameState = 6;
+                }
+                break;
+            case 6: // move to ramp alignment spot
+                map.setGoal(2.5,6.5);
                 linedUp(1,2);
-                // blockerWipe();
-                if(map.distanceToGoal()<=.1) { //TODO: '|| colorsensor = white'
+                if(map.distanceToGoal()<=.1) {
                     blockLeft.setPosition(0);
                     blockRight.setPosition(1);
                     moveState = 0;  // stop the robot
-                    gameState = 6;  // Move to the next stage.
+                    gameState = 7;  // Move to the next stage.
                 }
-                aPrefDir = false; //Right is better for us.
-                //avoid(); //may act erratically since we start on the wall.
                 break;
-            case 6: //align with ramp, and gun it up.
-                map.setGoal(-35, 45); //47,45
+            case 7: //align with ramp, and gun it up.
+                map.setGoal(-35, 45);
                 linedUp(1,2);
                 break;
-            case 8: // Move Around.
-                aTimeStart = sTime;
-                aDistTrav = 0;
-                gameState = 9;
-            case 9:
-                minHead = heading-map.angleToGoal();
-                if(aTimeStart + 2 < sTime) {
-                    moveState = 3;
-                    if(usmLevel > 30){
-                        aX = map.getRobotX();
-                        aY = map.getRobotY();
-                        gameState = 10;
-                    }
-                }else if(usmLevel > 30){
-                    gameState = metaGameState;
-                }
-                break;
-            case 10:
-                map.setGoal(aX+Math.cos(Math.toRadians(minHead)),aY+Math.sin(Math.toRadians(minHead)));
-                if(map.distanceToGoal() <= .1){
-                    gameState = metaGameState;
-                }
-                //avoid(); //In case something is encountered on our new path, restart calculations.
+            case 777:
+                moveState = 0;
                 break;
         }
+
+        if(getRuntime() > 29) gameState = 777;  //robot death switch
+
         switch(moveState){
             case 0:
                 //Case zero is 'stop'
@@ -288,21 +208,18 @@ public class AutoRed extends OpMode {
                 power = 0.25;
                 boolean turnRight;
 
-                if(heading<=180) {
+                if(heading<=180){
                     turnRight = heading <= map.angleToGoal() && heading + 180 >= map.angleToGoal();
-                }
-
-                else {
+                }else{
                     turnRight = !(heading >= map.angleToGoal() && heading - 180 <= map.angleToGoal());
                 }
 
-                if (turnRight) {
-
+                if(turnRight){
                     motorRT.setPower(-power);
                     motorRB.setPower(-power);
                     motorLT.setPower(power);
                     motorLB.setPower(power);
-                } else {
+                }else{
                     motorRT.setPower(power);
                     motorRB.setPower(power);
                     motorLT.setPower(-power);
@@ -310,19 +227,14 @@ public class AutoRed extends OpMode {
                 }
                 break;
             case 3:
-                //Case Three is independent turning. It cares not about our heading, but instead
-                //uses aPrefDir to pick which way to turn. This is used in Case 10 exclusively atm.
-                power = .25;
-                if(aPrefDir){
+                climber.setPosition(0); //Move climber back to up position
+                power = -1; //power coefficient
+                if(map.distanceToGoal()>1/12) {
                     motorRT.setPower(power);
                     motorRB.setPower(power);
-                    motorLT.setPower(-power);
-                    motorLB.setPower(-power);
-                }else{
-                    motorRT.setPower(-power);
-                    motorRB.setPower(-power);
                     motorLT.setPower(power);
                     motorLB.setPower(power);
+                    map.moveRobot(dDist * DEGREES_TO_FEET, heading);
                 }
                 break;
             case 5:
@@ -337,23 +249,5 @@ public class AutoRed extends OpMode {
         telemetry.addData("robot x,y ",map.getRobotX()+","+map.getRobotY());
         telemetry.addData("angle to goal ",map.angleToGoal());
         telemetry.addData("dist from goal ",map.distanceToGoal());
-        telemetry.addData("Encoder Data :",(motorLB.getCurrentPosition()+motorRB.getCurrentPosition()+motorLT.getCurrentPosition()+motorRT.getCurrentPosition())/4);
-        telemetry.addData("LMB :",motorLB.getCurrentPosition());
-        telemetry.addData("RMB :",motorRB.getCurrentPosition());
-        telemetry.addData("LMT :",motorLT.getCurrentPosition());
-        telemetry.addData("Climber pos :",climber.getPosition());
-
-
     }
-
-    /*
-     * Code to run when the op mode is first disabled goes here
-     *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#stop()
-     */
-    @Override
-    public void stop() {
-
-    }
-
 }

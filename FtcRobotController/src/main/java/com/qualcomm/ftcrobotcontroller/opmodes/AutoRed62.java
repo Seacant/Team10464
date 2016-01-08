@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Team 10464 Autonomous program
  */
 
-public class AutoRed3 extends OpMode {
+public class AutoRed62 extends OpMode {
     public final double TOL = 7; //tolerance for heading calculations
     public final double DEGREES_TO_FEET = 0.0004659239004629629629629629629629629629629629629629;
     // ((204.5*.03937))/(1440*12) = Constant for converting encoder = ^^^^^^^^
@@ -48,10 +48,11 @@ public class AutoRed3 extends OpMode {
     // mark the first time I exit init, and override getRuntime to return that instead
     double climbTime;
 
-    int startPos = 9;
+
+    int startPos = 6;
     Map map = new Map(startPos); //this map object will allow for easy manipulations.
 
-    public AutoRed3() {
+    public AutoRed62() {
         //not used in the history of ever.
     }
 
@@ -110,6 +111,7 @@ public class AutoRed3 extends OpMode {
                 + motorRT.getCurrentPosition()
         ) / 4;
         dDist = cDist - lDist;
+
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
@@ -118,57 +120,31 @@ public class AutoRed3 extends OpMode {
                     gameState = 1;
                 }
                 break;
-            case 1: //Move up before turning to beacon
-                map.setGoal(startPos,9);
+            case 1: //Move up
+                map.setGoal(startPos,9.5);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
                     moveState = 0;
                     gameState = 2;
                 }
                 break;
-            case 2: //Move to beacon
-                map.setGoal(2.75,4);
+            case 2: //Sweep
+                map.setGoal(2, 6.5);
                 linedUp(1,2);
-                if(map.distanceToGoal()<=.1){
+                if(map.distanceToGoal()<=.1) {
                     moveState = 0;
                     gameState = 3;
                 }
                 break;
-            case 3: //move to climber deposit
-                map.setGoal(.5,4);
+            case 3: //move to red ramp
+                map.setGoal(5, 8.5);
                 linedUp(1,2);
-                if(map.distanceToGoal() <= .1) {
+                if(map.distanceToGoal()<=.1) {
                     moveState = 0;
                     gameState = 4;
                 }
                 break;
-            case 4: // line up, and drop climbers
-                map.setGoal(0, 4);
-                linedUp(5,2);
-                if(climbTime > 0 && getRuntime() > climbTime+1){
-                    moveState = 0;
-                    gameState = 5;
-                }
-                break;
-            case 5: // Back up to avoid wall while turning
-                map.setGoal(11,4);
-                linedUp(3,2);
-                if(climbTime > 0 && getRuntime() > climbTime + 1){
-                    moveState = 0;
-                    gameState = 6;
-                }
-                break;
-            case 6: // move to ramp alignment spot
-                map.setGoal(2.5,6.5);
-                linedUp(1,2);
-                if(map.distanceToGoal()<=.1) {
-                    blockLeft.setPosition(0);
-                    blockRight.setPosition(1);
-                    moveState = 0;  // stop the robot
-                    gameState = 7;  // Move to the next stage.
-                }
-                break;
-            case 7: //align with ramp, and gun it up.
+            case 4: //align with ramp, and gun it up.
                 map.setGoal(-35, 45);
                 linedUp(1,2);
                 break;

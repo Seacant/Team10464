@@ -1,39 +1,16 @@
 package com.qualcomm.ftcrobotcontroller;
 
-import android.util.Log;
-
 /**
  * Controls all map logic for autonomous
  */
 
-//Map visualization
-//      {0,0,0,0,0,0,0,3,3,3,3,3}, int[0]
-//      {0,0,0,0,0,0,0,0,3,3,3,3}, int[1]
-//      {0,0,0,0,0,0,0,0,0,3,3,3}, int[2]
-//      {0,0,0,0,0,0,0,0,0,0,3,3}, int[3]
-//      {0,0,0,0,0,0,0,0,0,0,0,3}, int[4]
-//      {0,0,0,0,0,0,0,0,0,0,0,0}, int[5]
-//      {0,0,0,0,0,0,0,0,0,0,0,0}, int[6]
-//      {3,0,0,0,0,0,0,0,0,0,0,0}, int[7]
-//      {3,3,0,0,0,0,0,0,0,0,0,0}, int[8]
-//      {3,3,3,0,0,0,0,0,0,0,0,0}, int[9]
-//      {3,3,3,3,0,0,0,0,0,0,0,0}, int[10]
-//      {3,3,3,3,3,0,0,0,0,0,0,0}, int[11]
-
 public class Map {
     double goalX, goalY;
     double robotX, robotY;
-    String teamColor;
 
-    public Map(String color,int startPos){ //pass in Team color
-        teamColor = color;
-        if(teamColor.equals("Blue")){
+    public Map(double startPos){ //pass in Team color
             robotX = startPos;
             robotY = 10.25;
-        }else{
-            robotX = 0.75;
-            robotY = startPos;
-        }
     }
 
     public void setGoal(double x, double y){
