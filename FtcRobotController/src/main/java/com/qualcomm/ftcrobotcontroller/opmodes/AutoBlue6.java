@@ -157,9 +157,6 @@ public class AutoBlue6 extends OpMode {
                 if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
                     moveState = 3;
                 } else {
-                    moveState = 2;
-                }
-                if(map.distanceToGoal() <= .1){
                     moveState = 0;
                     gameState = 6;
                 }
@@ -247,6 +244,7 @@ public class AutoBlue6 extends OpMode {
         }
 
         telemetry.addData("Runtime ",getRuntime());
+        telemetry.addData("States ",gameState + " " + moveState);
         telemetry.addData("heading ",heading);
         telemetry.addData("goal x,y ",map.getGoalX()+","+map.getGoalY());
         telemetry.addData("robot x,y ",map.getRobotX()+","+map.getRobotY());

@@ -155,9 +155,6 @@ public class AutoRed3 extends OpMode {
                 if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
                     moveState = 3;
                 } else {
-                    moveState = 2;
-                }
-                if(map.distanceToGoal() <= .1){
                     moveState = 0;
                     gameState = 6;
                 }
