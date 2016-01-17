@@ -1,6 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.ftcrobotcontroller.Map;
@@ -26,9 +27,12 @@ public class AutoBlue6 extends OpMode {
     DcMotor motorLT;
     DcMotor motorLB;
     DcMotor motorA;
-    DcMotor motorS;
     DcMotor motorC;
+    DcMotor motorE;
+    DcMotor motorR;
     GyroSensor gyro;
+    ColorSensor colBot;
+    ColorSensor colTop;
     Servo climber;
     Servo swingLeft;
     Servo blockRight;
@@ -47,7 +51,7 @@ public class AutoBlue6 extends OpMode {
     double tDiff; // getRuntime() does this really annoying thing where it counts init time, so I
                   // mark the first time I exit init, and override getRuntime to return that instead
     double climbTime;
-
+    double[] RGBStart;
 
     int startPos = 6;
     Map map = new Map(startPos); //this map object will allow for easy manipulations.
@@ -69,8 +73,9 @@ public class AutoBlue6 extends OpMode {
         motorLB.setDirection(DcMotor.Direction.FORWARD);
 
         motorA = hardwareMap.dcMotor.get("motor_A");
-        motorS = hardwareMap.dcMotor.get("motor_S");
         motorC = hardwareMap.dcMotor.get("motor_C");
+        motorE = hardwareMap.dcMotor.get("motor_E");
+        motorR = hardwareMap.dcMotor.get("motor_R");
 
         climber = hardwareMap.servo.get("climber");
         swingLeft = hardwareMap.servo.get("swing_l");
@@ -83,6 +88,11 @@ public class AutoBlue6 extends OpMode {
         swingRight.setPosition(.8);
         blockRight.setPosition(0);
         blockLeft.setPosition(1);
+
+        colBot = hardwareMap.colorSensor.get("colBot");
+        colTop = hardwareMap.colorSensor.get("colTop");
+        RGBStart = new double[] {colTop.red(),colTop.green(),colTop.blue()};
+
 
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
@@ -97,8 +107,8 @@ public class AutoBlue6 extends OpMode {
     }
 
     @Override
-    public double getRuntime(){
-        return super.getRuntime()-tDiff;
+    public double getRuntime() {
+        return super.getRuntime() - tDiff;
     }
 
     @Override

@@ -51,5 +51,7 @@ public class Map {
         robotY -= feet * Math.sin(Math.toRadians((heading + 450) % 360));
     }
 
-    public double angleToGoalRev(){return ((angleToGoal() + 180) % 360);}
+    public double angleToGoalRev() {
+        return ((angleToGoal() + 180) % 360);
+    }
 }

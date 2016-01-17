@@ -53,5 +53,6 @@ public class FtcOpModeRegister implements OpModeRegister {
       manager.register("Red 62", AutoRed62.class);
       manager.register("Blue 3", AutoBlue3.class);
       manager.register("Red 3", AutoRed3.class);
+      manager.register("Colour Test", AdafruitRGBExample.class);
   }
 }
