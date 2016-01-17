@@ -2,6 +2,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 /**
  * Created by Travis on 10/3/2015.
@@ -12,26 +13,20 @@ public class TankTeleOp extends OpMode {
     DcMotor motorRightB;
     DcMotor motorLeft;
     DcMotor motorLeftB;
-    DcMotor motorArm;
-    DcMotor motorArmExtender;
-    DcMotor motorClaw;
+    DcMotor motorA;
+    DcMotor motorC;
+    DcMotor motorE;
+    DcMotor motorR;
     Servo climber;
     Servo rightSwing;
     Servo leftSwing;
     Servo leftBlocker;
     Servo rightBlocker;
-    /**
-     * Constructor
-     */
+
     public TankTeleOp() {
 
     }
 
-    /*
-     * Code to run when the op mode is first enabled goes here
-     *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
-     */
     @Override
     public void init() {
         motorRight = hardwareMap.dcMotor.get("motor_RT");
@@ -40,10 +35,13 @@ public class TankTeleOp extends OpMode {
         motorLeft = hardwareMap.dcMotor.get("motor_LT");
         motorLeftB = hardwareMap.dcMotor.get("motor_LB");
 
-        motorArm = hardwareMap.dcMotor.get("motor_A");
-        motorArmExtender = hardwareMap.dcMotor.get("motor_S");
-        motorClaw = hardwareMap.dcMotor.get("motor_C");
+        motorA = hardwareMap.dcMotor.get("motor_A");
+        motorC = hardwareMap.dcMotor.get("motor_C");
+        motorE = hardwareMap.dcMotor.get("motor_E");
+        motorR = hardwareMap.dcMotor.get("motor_R");
 
+        motorE.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorR.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 
         motorRight.setDirection(DcMotor.Direction.FORWARD);
         motorRightB.setDirection(DcMotor.Direction.FORWARD);
@@ -58,25 +56,53 @@ public class TankTeleOp extends OpMode {
 
     }
 
-    /*
-     * This method will be called repeatedly in a loop, the light hitter is light_hit
-     *
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
-     */
     @Override
     public void loop() {
-        motorArmExtender.setPower(0);
-        motorArm.setPower(0);
-        motorClaw.setPower(0);
-        
-        if(gamepad2.right_bumper){
-            rightBlocker.setPosition(0);//Moves both blockers
+        //reset all boolean-set motor pos' to 0
+        motorA.setPower(0);
+        motorC.setPower(0);
+        motorE.setPower(0);
+        motorR.setPower(0);
 
+        //Travis
+        if(gamepad1.left_bumper){
+            motorC.setPower(1);
+        }
+        if(gamepad1.right_bumper){
+            motorC.setPower(-1);
+        }
+
+        if(gamepad1.left_trigger>.1) {
+            motorE.setPower(1);
+            motorR.setPower(-.5);
+        }
+
+        if(gamepad1.right_trigger>.1) {
+            motorE.setPower(-1);
+            motorR.setPower(.5);
+        }
+        
+        if(gamepad1.dpad_up){
+            motorA.setPower(.5);
+        }
+        if(gamepad1.dpad_down){
+            motorA.setPower(-0.5);
+        }
+
+        motorRight.setPower(gamepad1.right_stick_y);
+        motorRightB.setPower(gamepad1.right_stick_y);
+        motorLeft.setPower(gamepad1.left_stick_y);
+        motorLeftB.setPower(gamepad1.left_stick_y);
+
+
+        //Jonathan
+        if(gamepad2.right_bumper){
+            rightBlocker.setPosition(0);
         }
         if(gamepad2.right_trigger > 0.5){
-            rightBlocker.setPosition(1);//Moves both blockers
-
+            rightBlocker.setPosition(1);
         }
+
         if(gamepad2.left_bumper){
             leftBlocker.setPosition(1);
         }
@@ -84,43 +110,27 @@ public class TankTeleOp extends OpMode {
             leftBlocker.setPosition(0);
         }
 
-        if(gamepad1.left_bumper){
-            motorClaw.setPower(1); // Needs to be fixed -- Should operate ball collection
-        }
-        if(gamepad1.right_bumper){
-            motorClaw.setPower(-1);
-        }
-
-
-        if(gamepad1.left_trigger>.1) {
-            motorArmExtender.setPower(-gamepad1.left_trigger);
-        }
-        if(gamepad1.right_trigger>.1){
-            motorArmExtender.setPower(gamepad1.right_trigger);
-        }
-        
-        if(gamepad1.dpad_up){
-            motorArm.setPower(.5);
-        }
-        if(gamepad1.dpad_down){
-            motorArm.setPower(-0.5);
-        }
         if(gamepad2.dpad_left){
             rightSwing.setPosition(.55);
         }
-
         if(gamepad2.dpad_right){
-            rightSwing.setPosition(0); //0 Up, 1 Down
+            rightSwing.setPosition(0);
         }
 
-        if(gamepad2.y){
-            climber.setPosition(climber.getPosition()>.5?0:1); //moves climber
+        if(gamepad2.dpad_up) {
+            climber.setPosition(1);
+        }
+        if(gamepad2.dpad_down){
+            climber.setPosition(0);
         }
 
-        motorRight.setPower(gamepad1.right_stick_y);
-        motorRightB.setPower(gamepad1.right_stick_y);
-        motorLeft.setPower(gamepad1.left_stick_y);
-        motorLeftB.setPower(gamepad1.left_stick_y);
+        telemetry.addData("Runtime ",getRuntime());
+        telemetry.addData("MotorE target ",motorE.getTargetPosition());
+        telemetry.addData("MotorR target ",motorR.getTargetPosition());
+        telemetry.addData("MotorE current ",motorE.getCurrentPosition());
+        telemetry.addData("MotorR current ",motorR.getCurrentPosition());
+        telemetry.addData("Right Trigger ",gamepad1.right_trigger);
+        telemetry.addData("Left Trigger ",gamepad1.left_trigger);
     }
 
     /*
