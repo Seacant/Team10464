@@ -41,7 +41,7 @@ public class TankTeleOp extends OpMode {
         motorR = hardwareMap.dcMotor.get("motor_R");
 
         motorE.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorR.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
         motorRight.setDirection(DcMotor.Direction.FORWARD);
         motorRightB.setDirection(DcMotor.Direction.FORWARD);
@@ -74,19 +74,21 @@ public class TankTeleOp extends OpMode {
 
         if(gamepad1.left_trigger>.1) {
             motorE.setPower(1);
-            motorR.setPower(-.5);
+            motorR.setPower(1);
+            motorR.setTargetPosition(motorE.getCurrentPosition());
         }
 
         if(gamepad1.right_trigger>.1) {
             motorE.setPower(-1);
-            motorR.setPower(.5);
+            motorR.setPower(1);
+            motorR.setTargetPosition(motorE.getCurrentPosition());
         }
         
         if(gamepad1.dpad_up){
-            motorA.setPower(.5);
+            motorA.setPower(1);
         }
         if(gamepad1.dpad_down){
-            motorA.setPower(-0.5);
+            motorA.setPower(-1);
         }
 
         motorRight.setPower(gamepad1.right_stick_y);
