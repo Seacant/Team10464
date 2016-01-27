@@ -27,11 +27,11 @@ public class Map {
     }
 
     public double getRobotX(){
-        return robotX;
+        return ((int)(robotX*1000))/1000.0;
     }
 
     public double getRobotY(){
-        return robotY;
+        return ((int)(robotY*1000))/1000.0;
     }
 
     public double angleToGoal(){
