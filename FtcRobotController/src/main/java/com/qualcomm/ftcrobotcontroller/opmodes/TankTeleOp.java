@@ -18,6 +18,7 @@ public class TankTeleOp extends OpMode {
     DcMotor motorE;
     DcMotor motorR;
     Servo climber;
+    Servo claw;
     Servo rightSwing;
     Servo leftSwing;
     Servo leftBlocker;
@@ -49,10 +50,13 @@ public class TankTeleOp extends OpMode {
         motorLeftB.setDirection(DcMotor.Direction.REVERSE);
         
         climber = hardwareMap.servo.get("climber");
+        claw = hardwareMap.servo.get("claw");
         rightSwing = hardwareMap.servo.get("swing_r");
         leftSwing = hardwareMap.servo.get("swing_l");
         rightBlocker = hardwareMap.servo.get("block_r");
         leftBlocker = hardwareMap.servo.get("block_l");
+
+        claw.setPosition(0);
 
     }
 
@@ -63,6 +67,9 @@ public class TankTeleOp extends OpMode {
         motorC.setPower(0);
         motorE.setPower(0);
         motorR.setPower(0);
+
+      /* if (claw.getPosition() == 1 ){
+        claw.setPosition(0); }*/
 
         //Travis
         if(gamepad1.left_bumper){
@@ -101,6 +108,10 @@ public class TankTeleOp extends OpMode {
         if(gamepad2.right_bumper){
             rightBlocker.setPosition(0);
         }
+
+        if(gamepad2.b){
+            rightBlocker.setPosition(.5);
+        }
         if(gamepad2.right_trigger > 0.5){
             rightBlocker.setPosition(1);
         }
@@ -108,6 +119,14 @@ public class TankTeleOp extends OpMode {
         if(gamepad2.left_bumper){
             leftBlocker.setPosition(1);
         }
+
+        if(gamepad2.x) {
+            leftBlocker.setPosition(.5);
+        }
+        if(gamepad2.y){
+            claw.setPosition(1);
+        }
+
         if(gamepad2.left_trigger > 0.5){
             leftBlocker.setPosition(0);
         }
