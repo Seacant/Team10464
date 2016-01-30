@@ -34,7 +34,7 @@ public class AutoRed extends AutonomousBase {
                 }
                 break;
             case 2: //Move to beacon
-                map.setGoal(2.75,4);
+                map.setGoal(2.75,4.2);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1){
                     moveState = 0;
@@ -42,7 +42,7 @@ public class AutoRed extends AutonomousBase {
                 }
                 break;
             case 3: //move to climber deposit
-                map.setGoal(.5,4);
+                map.setGoal(.5,4.2);
                 linedUp(1,2);
                 if(map.distanceToGoal() <= .1) {
                     moveState = 0;
@@ -50,7 +50,7 @@ public class AutoRed extends AutonomousBase {
                 }
                 break;
             case 4: // line up, and drop climbers
-                map.setGoal(0, 4);
+                map.setGoal(0, 4.2);
                 linedUp(5,2);
                 if(climbTime > 0 && getRuntime() > climbTime+1){
                     moveState = 0;
@@ -58,7 +58,7 @@ public class AutoRed extends AutonomousBase {
                 }
                 break;
             case 5: // Back up to avoid wall while turning
-                map.setGoal(11, 4);
+                map.setGoal(11, 4.2);
                 if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
                     moveState = 3;
                 } else {

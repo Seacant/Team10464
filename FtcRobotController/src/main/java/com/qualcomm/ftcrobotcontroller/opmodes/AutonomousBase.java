@@ -29,9 +29,8 @@ public abstract class AutonomousBase extends OpMode {
     DcMotor motorE;
     DcMotor motorR;
     GyroSensor gyro;
-    ColorSensor colBot;
-    ColorSensor colTop;
     Servo climber;
+    Servo claw;
     Servo swingLeft;
     Servo blockRight;
     Servo blockLeft;
@@ -49,7 +48,6 @@ public abstract class AutonomousBase extends OpMode {
     double tDiff; // getRuntime() does this really annoying thing where it counts init time, so I
     // mark the first time I exit init, and override getRuntime to return that instead
     double climbTime;
-    double[] RGBStart;
 
     int startPos = 6;
     Map map = new Map(startPos); //this map object will allow for easy manipulations.
@@ -72,20 +70,19 @@ public abstract class AutonomousBase extends OpMode {
         motorR = hardwareMap.dcMotor.get("motor_R");
 
         climber = hardwareMap.servo.get("climber");
+        claw = hardwareMap.servo.get("claw");
         swingLeft = hardwareMap.servo.get("swing_l");
         swingRight = hardwareMap.servo.get("swing_r");
         blockRight = hardwareMap.servo.get("block_r");
         blockLeft = hardwareMap.servo.get("block_l");
 
         climber.setPosition(0);
+        claw.setPosition(.5);
         swingLeft.setPosition(.8);
         swingRight.setPosition(.8);
         blockRight.setPosition(0);
         blockLeft.setPosition(1);
 
-        colBot = hardwareMap.colorSensor.get("colBot");
-        colTop = hardwareMap.colorSensor.get("colTop");
-        RGBStart = new double[] {colTop.red(),colTop.green(),colTop.blue()};
 
 
         gyro = hardwareMap.gyroSensor.get("gyro");

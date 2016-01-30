@@ -56,7 +56,7 @@ public class TankTeleOp extends OpMode {
         rightBlocker = hardwareMap.servo.get("block_r");
         leftBlocker = hardwareMap.servo.get("block_l");
 
-        claw.setPosition(0);
+        claw.setPosition(.5);
 
     }
 
@@ -68,8 +68,8 @@ public class TankTeleOp extends OpMode {
         motorE.setPower(0);
         motorR.setPower(0);
 
-      /* if (claw.getPosition() == 1 ){
-        claw.setPosition(0); }*/
+
+
 
         //Travis
         if(gamepad1.left_bumper){
@@ -117,7 +117,7 @@ public class TankTeleOp extends OpMode {
         }
 
         if(gamepad2.left_bumper){
-            leftBlocker.setPosition(1);
+            leftBlocker.setPosition(0);
         }
 
         if(gamepad2.x) {
@@ -127,8 +127,15 @@ public class TankTeleOp extends OpMode {
             claw.setPosition(1);
         }
 
+        if(gamepad2.a){
+            claw.setPosition(0);
+        }
+        if(gamepad2.dpad_left){
+            claw.setPosition(.5);
+        }
+
         if(gamepad2.left_trigger > 0.5){
-            leftBlocker.setPosition(0);
+            leftBlocker.setPosition(1);
         }
 
         if(gamepad2.dpad_left){
