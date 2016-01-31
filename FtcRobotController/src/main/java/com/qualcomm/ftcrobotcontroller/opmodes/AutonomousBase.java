@@ -40,6 +40,7 @@ public abstract class AutonomousBase extends OpMode {
     //We stateful now, boys.
     int gameState;
     int moveState;
+    boolean inited = false;
 
     double power;
     double heading;
@@ -76,15 +77,6 @@ public abstract class AutonomousBase extends OpMode {
         blockRight = hardwareMap.servo.get("block_r");
         blockLeft = hardwareMap.servo.get("block_l");
 
-        climber.setPosition(0);
-        claw.setPosition(.5);
-        swingLeft.setPosition(.8);
-        swingRight.setPosition(.8);
-        blockRight.setPosition(0);
-        blockLeft.setPosition(1);
-
-
-
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
     }
@@ -113,7 +105,7 @@ public abstract class AutonomousBase extends OpMode {
                 break;
             case 2:
                 //Case Two is 'turn towards'.
-                power = 0.25;
+                power = 0.35;
                 boolean turnRight;
 
                 if(heading<=180){
@@ -161,8 +153,16 @@ public abstract class AutonomousBase extends OpMode {
                 + motorRT.getCurrentPosition()
         ) / 4;
         dDist = cDist - lDist;
-
-        if(getRuntime() > 29) gameState = 777;  //robot death switch
+        if(!inited){
+            climber.setPosition(0);
+            claw.setPosition(.5);
+            swingLeft.setPosition(.8);
+            swingRight.setPosition(.8);
+            blockRight.setPosition(0);
+            blockLeft.setPosition(1);
+            inited = true;
+        }
+        //if(getRuntime() > 29) gameState = 777;  //robot death switch
     }
 
     public void telemetry(){

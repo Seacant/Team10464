@@ -17,6 +17,7 @@ public class AutoRed3 extends AutonomousBase {
     public void gameState() {
 
         super.gameState();
+        startPos = 9;
 
         //Goal-specific logic
         switch(gameState){
@@ -27,7 +28,7 @@ public class AutoRed3 extends AutonomousBase {
                 }
                 break;
             case 1: //Move up before turning to beacon
-                map.setGoal(startPos,9);
+                map.setGoal(startPos,10);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
                     moveState = 0;
@@ -59,7 +60,7 @@ public class AutoRed3 extends AutonomousBase {
                 }
                 break;
             case 5: // Back up to avoid wall while turning
-                map.setGoal(11, 4);
+                map.setGoal(1, 4);
                 if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
                     moveState = 3;
                 } else {
