@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public abstract class AutonomousBase extends OpMode {
     public final double TOL = 7; //tolerance for heading calculations
-    public final double DEGREES_TO_FEET = 0.0004659239004629629629629629629629629629629629629629;
+    public final double DEGREES_TO_FEET = (1.0/2)*.0027199193;//0.0004659239004629629629629629629629629629629629629629;
     // ((204.5*.03937))/(1440*12) = Constant for converting encoder = ^^^^^^^^
     //EXPLAINATION:
     //204.5=65(diameter of sprocket in mm)*PI

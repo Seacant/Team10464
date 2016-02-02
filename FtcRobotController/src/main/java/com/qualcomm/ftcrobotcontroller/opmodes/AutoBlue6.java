@@ -10,7 +10,7 @@ public class AutoBlue6 extends AutonomousBase {
     public void gameState(){
 
         super.gameState();
-
+        double lineUp= 3.8;
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
@@ -28,7 +28,7 @@ public class AutoBlue6 extends AutonomousBase {
                 }
                 break;
             case 2: //Move to beacon
-                map.setGoal(9.25,4);
+                map.setGoal(9.25,lineUp);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1){
                     moveState = 0;
@@ -36,7 +36,7 @@ public class AutoBlue6 extends AutonomousBase {
                 }
                 break;
             case 3: //move to climber deposit
-                map.setGoal(11.5,4);
+                map.setGoal(11.5,lineUp);
                 linedUp(1,2);
                 if(map.distanceToGoal() <= .1) {
                     moveState = 0;
@@ -44,7 +44,7 @@ public class AutoBlue6 extends AutonomousBase {
                 }
                 break;
             case 4: // line up, and drop climbers
-                map.setGoal(12, 4);
+                map.setGoal(12, lineUp);
                 linedUp(5,2);
                 if(climbTime > 0 && getRuntime() > climbTime+1){
                     moveState = 0;
@@ -52,7 +52,7 @@ public class AutoBlue6 extends AutonomousBase {
                 }
                 break;
             case 5: // Back up to avoid wall while turning
-                map.setGoal(11, 4);
+                map.setGoal(11, lineUp);
                 if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
                     moveState = 3;
                 } else {
