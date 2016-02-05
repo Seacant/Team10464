@@ -53,12 +53,12 @@ public class AutoBlue6 extends AutonomousBase {
                 break;
             case 5: // Back up to avoid wall while turning
                 map.setGoal(11, lineUp);
-                if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
-                    moveState = 3;
-                } else {
+                linedUpRev(3,0);
+                if(map.distanceToGoal() <=.1){
                     moveState = 0;
                     gameState = 6;
                 }
+
                 break;
             case 6: // move to ramp alignment spot
                 map.setGoal(9.5,6.5);

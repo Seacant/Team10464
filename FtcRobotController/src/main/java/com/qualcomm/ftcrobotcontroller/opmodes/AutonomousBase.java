@@ -61,10 +61,10 @@ public abstract class AutonomousBase extends OpMode {
         motorLT = hardwareMap.dcMotor.get("motor_LT");
         motorLB = hardwareMap.dcMotor.get("motor_LB");
 
-        motorRT.setDirection(DcMotor.Direction.REVERSE);
-        motorRB.setDirection(DcMotor.Direction.REVERSE);
-        motorLT.setDirection(DcMotor.Direction.FORWARD);
-        motorLB.setDirection(DcMotor.Direction.FORWARD);
+        motorLT.setDirection(DcMotor.Direction.REVERSE);
+        motorLB.setDirection(DcMotor.Direction.REVERSE);
+        motorRT.setDirection(DcMotor.Direction.FORWARD);
+        motorRB.setDirection(DcMotor.Direction.FORWARD);
 
         motorA = hardwareMap.dcMotor.get("motor_A");
         motorC = hardwareMap.dcMotor.get("motor_C");
@@ -184,7 +184,14 @@ public abstract class AutonomousBase extends OpMode {
     }
 
     public void linedUp(int o, int n) {
-        if (Math.abs(heading - map.angleToGoal()) < TOL || (heading > 360 - TOL && map.angleToGoal() < TOL || (heading < TOL && map.angleToGoal() > 360 - TOL))) {
+        if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
+            moveState = o;
+        } else {
+            moveState = n;
+        }
+    }
+    public void linedUpRev(int o, int n) {
+        if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
             moveState = o;
         } else {
             moveState = n;

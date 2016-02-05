@@ -41,8 +41,8 @@ public class TankTeleOp extends OpMode {
         motorE = hardwareMap.dcMotor.get("motor_E");
         motorR = hardwareMap.dcMotor.get("motor_R");
 
-        motorE.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+       // motorE.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+       // motorR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
         motorRight.setDirection(DcMotor.Direction.FORWARD);
         motorRightB.setDirection(DcMotor.Direction.FORWARD);
@@ -57,6 +57,8 @@ public class TankTeleOp extends OpMode {
         leftBlocker = hardwareMap.servo.get("block_l");
 
         claw.setPosition(.5);
+        rightBlocker.setPosition(1);
+        leftBlocker.setPosition(0);
 
     }
 
@@ -79,17 +81,22 @@ public class TankTeleOp extends OpMode {
             motorC.setPower(-1);
         }
 
+        //ePosition = motorE.getCurrentPosition();
+
+
         if(gamepad1.left_trigger>.1) {
-            motorE.setPower(1);
+            //ePosition += 200;
+            motorE.setPower(.25);
             motorR.setPower(1);
-            motorR.setTargetPosition(motorE.getCurrentPosition());
+            //motorR.setTargetPosition(motorE.getCurrentPosition());
         }
 
         if(gamepad1.right_trigger>.1) {
-            motorE.setPower(-1);
-            motorR.setPower(1);
-            motorR.setTargetPosition(motorE.getCurrentPosition());
+            motorE.setPower(-.6);
+            motorR.setPower(-1);
+            //motorR.setTargetPosition(motorE.getCurrentPosition());
         }
+
         
         if(gamepad1.dpad_up){
             motorA.setPower(1);
@@ -106,23 +113,29 @@ public class TankTeleOp extends OpMode {
 
         //Jonathan
         if(gamepad2.right_bumper){
-            rightBlocker.setPosition(0);
+            rightBlocker.setPosition(.25);
         }
 
         if(gamepad2.b){
-            rightBlocker.setPosition(.5);
+            rightBlocker.setPosition(.65);
         }
         if(gamepad2.right_trigger > 0.5){
             rightBlocker.setPosition(1);
         }
 
         if(gamepad2.left_bumper){
-            leftBlocker.setPosition(0);
+            leftBlocker.setPosition(.65);
         }
 
         if(gamepad2.x) {
             leftBlocker.setPosition(.5);
         }
+
+        if(gamepad2.left_trigger > 0.5){
+            leftBlocker.setPosition(0);
+        }
+
+
         if(gamepad2.y){
             claw.setPosition(1);
         }
@@ -132,10 +145,6 @@ public class TankTeleOp extends OpMode {
         }
         if(gamepad2.dpad_left){
             claw.setPosition(.5);
-        }
-
-        if(gamepad2.left_trigger > 0.5){
-            leftBlocker.setPosition(1);
         }
 
         if(gamepad2.dpad_left){
@@ -159,6 +168,7 @@ public class TankTeleOp extends OpMode {
         telemetry.addData("MotorR current ",motorR.getCurrentPosition());
         telemetry.addData("Right Trigger ",gamepad1.right_trigger);
         telemetry.addData("Left Trigger ",gamepad1.left_trigger);
+        telemetry.addData("Motor e Power", motorE.getPower());
     }
 
     /*
