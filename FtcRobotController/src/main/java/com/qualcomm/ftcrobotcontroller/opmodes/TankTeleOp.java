@@ -109,9 +109,13 @@ public class TankTeleOp extends OpMode {
         }
 
         //Drive Control
-        if(gamepad1.start) {
-            forward = !forward;
+        if(gamepad1.right_stick_button) {
+            forward = true;
         }
+        if(gamepad1.left_stick_button){
+            forward = false;
+        }
+
         if (forward) {
 
             motorRight.setPower(gamepad1.right_stick_y);
