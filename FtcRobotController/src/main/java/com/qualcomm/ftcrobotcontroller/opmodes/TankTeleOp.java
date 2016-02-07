@@ -23,6 +23,7 @@ public class TankTeleOp extends OpMode {
     Servo leftSwing;
     Servo leftBlocker;
     Servo rightBlocker;
+    boolean forward;
 
     public TankTeleOp() {
 
@@ -59,6 +60,8 @@ public class TankTeleOp extends OpMode {
         claw.setPosition(.5);
         rightBlocker.setPosition(1);
         leftBlocker.setPosition(0);
+
+        forward = true;
 
     }
 
@@ -105,11 +108,24 @@ public class TankTeleOp extends OpMode {
             motorA.setPower(-1);
         }
 
-        motorRight.setPower(gamepad1.right_stick_y);
-        motorRightB.setPower(gamepad1.right_stick_y);
-        motorLeft.setPower(gamepad1.left_stick_y);
-        motorLeftB.setPower(gamepad1.left_stick_y);
+        //Drive Control
+        if(gamepad1.start) {
+            forward = !forward;
+        }
+        if (forward) {
 
+            motorRight.setPower(gamepad1.right_stick_y);
+            motorRightB.setPower(gamepad1.right_stick_y);
+            motorLeft.setPower(gamepad1.left_stick_y);
+            motorLeftB.setPower(gamepad1.left_stick_y);
+        }
+
+        else {
+            motorRightB.setPower(-gamepad1.right_stick_y);
+            motorRight.setPower(-gamepad1.right_stick_y);
+            motorLeftB.setPower(-gamepad1.left_stick_y);
+            motorLeft.setPower(-gamepad1.left_stick_y);
+        }
 
         //Jonathan
         if(gamepad2.right_bumper){
