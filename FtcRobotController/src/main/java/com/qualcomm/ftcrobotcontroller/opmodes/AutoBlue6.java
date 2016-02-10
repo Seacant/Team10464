@@ -10,7 +10,7 @@ public class AutoBlue6 extends AutonomousBase {
     public void gameState(){
 
         super.gameState();
-        double lineUp= 3.8;
+        double lineUp= 5.75;
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
@@ -38,9 +38,13 @@ public class AutoBlue6 extends AutonomousBase {
             case 3: //move to climber deposit
                 map.setGoal(11.5,lineUp);
                 linedUp(1,2);
-                if(map.distanceToGoal() <= .1) {
+                if(touch.isPressed()){
                     moveState = 0;
                     gameState = 4;
+                }
+                if(map.distanceToGoal() <= .1) {
+                    moveState = 0;
+                    gameState = 777;
                 }
                 break;
             case 4: // line up, and drop climbers
@@ -50,29 +54,6 @@ public class AutoBlue6 extends AutonomousBase {
                     moveState = 0;
                     gameState = 5;
                 }
-                break;
-            case 5: // Back up to avoid wall while turning
-                map.setGoal(11, lineUp);
-                linedUpRev(3,0);
-                if(map.distanceToGoal() <=.1){
-                    moveState = 0;
-                    gameState = 6;
-                }
-
-                break;
-            case 6: // move to ramp alignment spot
-                map.setGoal(9.5,6.5);
-                linedUp(1,2);
-                if(map.distanceToGoal()<=.1) {
-                    blockLeft.setPosition(0);
-                    blockRight.setPosition(1);
-                    moveState = 0;  // stop the robot
-                    gameState = 7;  // Move to the next stage.
-                }
-                break;
-            case 7: //align with ramp, and gun it up.
-                map.setGoal(47, 45);
-                linedUp(1,2);
                 break;
             case 777:
                 moveState = 0;
