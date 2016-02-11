@@ -16,7 +16,7 @@ public class AutoRed extends AutonomousBase {
     public void gameState() {
 
         super.gameState();
-
+        double lineUp = 5.75;
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
@@ -34,7 +34,7 @@ public class AutoRed extends AutonomousBase {
                 }
                 break;
             case 2: //Move to beacon
-                map.setGoal(2.75,4.2);
+                map.setGoal(2.75,lineUp);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1){
                     moveState = 0;
@@ -42,42 +42,24 @@ public class AutoRed extends AutonomousBase {
                 }
                 break;
             case 3: //move to climber deposit
-                map.setGoal(.5,4.2);
+                map.setGoal(.5, lineUp);
                 linedUp(1,2);
-                if(map.distanceToGoal() <= .1) {
+                if (touch.isPressed()) {
                     moveState = 0;
                     gameState = 4;
                 }
+                if(map.distanceToGoal() <= .1) {
+                    moveState = 0;
+                    gameState = 777;
+                }
                 break;
             case 4: // line up, and drop climbers
-                map.setGoal(0, 4.2);
+                map.setGoal(0, lineUp);
                 linedUp(5,2);
                 if(climbTime > 0 && getRuntime() > climbTime+1){
                     moveState = 0;
                     gameState = 5;
                 }
-                break;
-            case 5: // Back up to avoid wall while turning
-                map.setGoal(11, 4.2);
-                if (Math.abs(heading - map.angleToGoalRev()) < TOL || (heading > 360 - TOL && map.angleToGoalRev() < TOL || (heading < TOL && map.angleToGoalRev() > 360 - TOL))) {
-                    moveState = 3;
-                } else {
-                    moveState = 0;
-                    gameState = 6;
-                }
-            case 6: // move to ramp alignment spot
-                map.setGoal(2.5,6.5);
-                linedUp(1,2);
-                if(map.distanceToGoal()<=.1) {
-                    blockLeft.setPosition(0);
-                    blockRight.setPosition(1);
-                    moveState = 0;  // stop the robot
-                    gameState = 7;  // Move to the next stage.
-                }
-                break;
-            case 7: //align with ramp, and gun it up.
-                map.setGoal(-35, 45);
-                linedUp(1,2);
                 break;
             case 777:
                 moveState = 0;

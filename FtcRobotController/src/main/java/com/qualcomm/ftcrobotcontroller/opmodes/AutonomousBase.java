@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /**
  * Created by minds on 1/23/2016.
@@ -36,6 +37,7 @@ public abstract class AutonomousBase extends OpMode {
     Servo blockRight;
     Servo blockLeft;
     Servo swingRight;
+    TouchSensor touch;
 
 
     //We stateful now, boys.
@@ -61,10 +63,10 @@ public abstract class AutonomousBase extends OpMode {
         motorLT = hardwareMap.dcMotor.get("motor_LT");
         motorLB = hardwareMap.dcMotor.get("motor_LB");
 
-        motorLT.setDirection(DcMotor.Direction.REVERSE);
-        motorLB.setDirection(DcMotor.Direction.REVERSE);
-        motorRT.setDirection(DcMotor.Direction.FORWARD);
-        motorRB.setDirection(DcMotor.Direction.FORWARD);
+        motorLT.setDirection(DcMotor.Direction.FORWARD);
+        motorLB.setDirection(DcMotor.Direction.FORWARD);
+        motorRT.setDirection(DcMotor.Direction.REVERSE);
+        motorRB.setDirection(DcMotor.Direction.REVERSE);
 
         motorA = hardwareMap.dcMotor.get("motor_A");
         motorC = hardwareMap.dcMotor.get("motor_C");
@@ -78,6 +80,7 @@ public abstract class AutonomousBase extends OpMode {
         blockRight = hardwareMap.servo.get("block_r");
         blockLeft = hardwareMap.servo.get("block_l");
 
+        touch = hardwareMap.touchSensor.get("touch");
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
     }
@@ -95,7 +98,7 @@ public abstract class AutonomousBase extends OpMode {
             case 1:
                 //Case one is 'move towards' in the most literal sense. It assumes the path is
                 //clear, and that there is a goal(9), and us(1) on the map somewhere.
-                power = -1; //power coefficient
+                power = -.5; //power coefficient
                 if(map.distanceToGoal()>1/12) {
                     motorRT.setPower(power);
                     motorRB.setPower(power);
@@ -106,7 +109,7 @@ public abstract class AutonomousBase extends OpMode {
                 break;
             case 2:
                 //Case Two is 'turn towards'.
-                power = -0.35;
+                power = -0.25;
                 boolean turnRight;
 
                 if(heading<=180){
@@ -115,7 +118,7 @@ public abstract class AutonomousBase extends OpMode {
                     turnRight = !(heading >= map.angleToGoal() && heading - 180 <= map.angleToGoal());
                 }
 
-                if(turnRight){
+                if(!turnRight){
                     motorRT.setPower(-power);
                     motorRB.setPower(-power);
                     motorLT.setPower(power);
@@ -129,7 +132,7 @@ public abstract class AutonomousBase extends OpMode {
                 break;
             case 3:
                 climber.setPosition(0); //Move climber back to up position
-                power = 1; //power coefficient
+                power = .5; //power coefficient
                 if(map.distanceToGoal()>1/12) {
                     motorRT.setPower(power);
                     motorRB.setPower(power);
@@ -140,7 +143,17 @@ public abstract class AutonomousBase extends OpMode {
                 break;
             case 5:
                 if(climber.getPosition() < .5) climbTime = getRuntime();
-                climber.setPosition(.75);
+                climber.setPosition(1);
+                break;
+            case 6:
+                power = -.2; //power coefficient
+                if(map.distanceToGoal()>1/12) {
+                    motorRT.setPower(power);
+                    motorRB.setPower(power);
+                    motorLT.setPower(power);
+                    motorLB.setPower(power);
+                    map.moveRobot(dDist * DEGREES_TO_FEET, heading);
+                }
                 break;
         }
     }
@@ -159,8 +172,8 @@ public abstract class AutonomousBase extends OpMode {
             claw.setPosition(.5);
             swingLeft.setPosition(.4);
             swingRight.setPosition(.4);
-            blockRight.setPosition(.5);
-            blockLeft.setPosition(.5);
+            blockRight.setPosition(1) ;
+            blockLeft.setPosition(0);
             inited = true;
         }
         //if(getRuntime() > 29) gameState = 777;  //robot death switch

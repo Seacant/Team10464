@@ -73,9 +73,6 @@ public class TankTeleOp extends OpMode {
         motorE.setPower(0);
         motorR.setPower(0);
 
-
-
-
         //Travis
         if(gamepad1.left_bumper){
             motorC.setPower(1);
@@ -87,14 +84,14 @@ public class TankTeleOp extends OpMode {
         //ePosition = motorE.getCurrentPosition();
 
 
-        if(gamepad1.left_trigger>.1) {
+        if(gamepad1.left_trigger>.5) {
             //ePosition += 200;
             motorE.setPower(.25);
             motorR.setPower(1);
             //motorR.setTargetPosition(motorE.getCurrentPosition());
         }
 
-        if(gamepad1.right_trigger>.1) {
+        if(gamepad1.right_trigger>.5) {
             motorE.setPower(-.6);
             motorR.setPower(-1);
             //motorR.setTargetPosition(motorE.getCurrentPosition());
@@ -122,13 +119,11 @@ public class TankTeleOp extends OpMode {
             motorRightB.setPower(gamepad1.right_stick_y);
             motorLeft.setPower(gamepad1.left_stick_y);
             motorLeftB.setPower(gamepad1.left_stick_y);
-        }
-
-        else {
-            motorRightB.setPower(-gamepad1.right_stick_y);
-            motorRight.setPower(-gamepad1.right_stick_y);
-            motorLeftB.setPower(-gamepad1.left_stick_y);
-            motorLeft.setPower(-gamepad1.left_stick_y);
+        } else {
+            motorLeft.setPower(-gamepad1.right_stick_y);
+            motorLeftB.setPower(-gamepad1.right_stick_y);
+            motorRight.setPower(-gamepad1.left_stick_y);
+            motorRightB.setPower(-gamepad1.left_stick_y);
         }
 
         //Jonathan

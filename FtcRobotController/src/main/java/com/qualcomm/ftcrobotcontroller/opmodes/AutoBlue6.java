@@ -10,7 +10,7 @@ public class AutoBlue6 extends AutonomousBase {
     public void gameState(){
 
         super.gameState();
-        double lineUp= 5.75;
+        double lineUp= 5.5;
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
@@ -37,22 +37,14 @@ public class AutoBlue6 extends AutonomousBase {
                 break;
             case 3: //move to climber deposit
                 map.setGoal(11.5,lineUp);
-                linedUp(1,2);
+                linedUp(6,2);
                 if(touch.isPressed()){
-                    moveState = 0;
-                    gameState = 4;
+                    moveState = 5;
+                    gameState = 777;
                 }
                 if(map.distanceToGoal() <= .1) {
                     moveState = 0;
                     gameState = 777;
-                }
-                break;
-            case 4: // line up, and drop climbers
-                map.setGoal(12, lineUp);
-                linedUp(5,2);
-                if(climbTime > 0 && getRuntime() > climbTime+1){
-                    moveState = 0;
-                    gameState = 5;
                 }
                 break;
             case 777:
