@@ -70,11 +70,6 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController;
 public class AdafruitRGBExample extends LinearOpMode {
 
   ColorSensor sensorRGB;
-  DeviceInterfaceModule cdim;
-
-  // we assume that the LED pin of the RGB sensor is connected to
-  // digital port 5 (zero indexed).
-  static final int LED_CHANNEL = 5;
 
   @Override
   public void runOpMode() throws InterruptedException {
@@ -83,22 +78,8 @@ public class AdafruitRGBExample extends LinearOpMode {
     // to the log file.
     hardwareMap.logDevices();
 
-    // get a reference to our DeviceInterfaceModule object.
-    cdim = hardwareMap.deviceInterfaceModule.get("dim");
-
-    // set the digital channel to output mode.
-    // remember, the Adafruit sensor is actually two devices.
-    // It's an I2C sensor and it's also an LED that can be turned on or off.
-    cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
-
     // get a reference to our ColorSensor object.
-    sensorRGB = hardwareMap.colorSensor.get("color");
-
-    // bEnabled represents the state of the LED.
-    boolean bEnabled = true;
-
-    // turn the LED on in the beginning, just so user will know that the sensor is active.
-    cdim.setDigitalChannelState(LED_CHANNEL, bEnabled);
+    sensorRGB = hardwareMap.colorSensor.get("colBot");
 
     // wait one cycle.
     waitOneFullHardwareCycle();
@@ -134,13 +115,6 @@ public class AdafruitRGBExample extends LinearOpMode {
         DbgLog.msg("MY_DEBUG - x button was pressed!");
 
         // update previous state variable.
-        bPrevState = bCurrState;
-
-        // on button press, enable the LED.
-        bEnabled = true;
-
-        // turn on the LED.
-        cdim.setDigitalChannelState(LED_CHANNEL, bEnabled);
 
       } else if (bCurrState == false && bCurrState != bPrevState)  {
         // button is transitioning to a released state.
@@ -151,11 +125,6 @@ public class AdafruitRGBExample extends LinearOpMode {
         // update previous state variable.
         bPrevState = bCurrState;
 
-        // on button press, enable the LED.
-        bEnabled = false;
-
-        // turn off the LED.
-        cdim.setDigitalChannelState(LED_CHANNEL, bEnabled);
       }
 
       // convert the RGB values to HSV values.
