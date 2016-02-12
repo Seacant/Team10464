@@ -109,7 +109,7 @@ public abstract class AutonomousBase extends OpMode {
                 break;
             case 2:
                 //Case Two is 'turn towards'.
-                power = -0.25;
+                power = -0.3;
                 boolean turnRight;
 
                 if(heading<=180){
@@ -143,6 +143,10 @@ public abstract class AutonomousBase extends OpMode {
                 break;
             case 5:
                 if(climber.getPosition() < .5) climbTime = getRuntime();
+                motorRT.setPower(0);
+                motorRB.setPower(0);
+                motorLT.setPower(0);
+                motorLB.setPower(0);
                 climber.setPosition(1);
                 break;
             case 6:
@@ -172,8 +176,8 @@ public abstract class AutonomousBase extends OpMode {
             claw.setPosition(.5);
             swingLeft.setPosition(.4);
             swingRight.setPosition(.4);
-            blockRight.setPosition(1) ;
-            blockLeft.setPosition(0);
+            blockRight.setPosition(0) ;
+            blockLeft.setPosition(1);
             inited = true;
         }
         //if(getRuntime() > 29) gameState = 777;  //robot death switch

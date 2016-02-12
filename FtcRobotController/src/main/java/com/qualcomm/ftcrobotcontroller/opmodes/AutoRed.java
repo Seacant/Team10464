@@ -16,7 +16,7 @@ public class AutoRed extends AutonomousBase {
     public void gameState() {
 
         super.gameState();
-        double lineUp = 5.75;
+        double lineUp = 5.25;
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:

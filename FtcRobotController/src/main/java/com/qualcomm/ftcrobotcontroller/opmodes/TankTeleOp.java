@@ -132,14 +132,14 @@ public class TankTeleOp extends OpMode {
         }
 
         if(gamepad2.b){
-            rightBlocker.setPosition(.65);
+            rightBlocker.setPosition(.75);
         }
         if(gamepad2.right_trigger > 0.5){
             rightBlocker.setPosition(1);
         }
 
         if(gamepad2.left_bumper){
-            leftBlocker.setPosition(.65);
+            leftBlocker.setPosition(.55);
         }
 
         if(gamepad2.x) {
