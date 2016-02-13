@@ -1,21 +1,15 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.ftcrobotcontroller.Map;
-import com.qualcomm.robotcore.hardware.Servo;
-
 /**
- * Created by Travis on 10/3/2015.
- * Team 10464 Autonomous program
+ * Created by Jonathan on 2/13/2016.
  */
-
-public class AutoRed62 extends AutonomousBase {
+public class AutoBlue32 extends AutonomousBase {
     @Override
-    public void gameState() {
+    public void gameState(){
+
         super.gameState();
-        double lineUp = 5.25;
+        double lineUp= 5.5;
+        startPos = 3;
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
@@ -33,7 +27,7 @@ public class AutoRed62 extends AutonomousBase {
                 }
                 break;
             case 2: //Move to beacon
-                map.setGoal(2.75,lineUp);
+                map.setGoal(9.25,lineUp);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1){
                     moveState = 0;
@@ -41,23 +35,15 @@ public class AutoRed62 extends AutonomousBase {
                 }
                 break;
             case 3: //move to climber deposit
-                map.setGoal(.5, lineUp);
-                linedUp(1,2);
-                if (touch.isPressed()) {
-                    moveState = 0;
-                    gameState = 4;
+                map.setGoal(11.5,lineUp);
+                linedUp(6,2);
+                if(touch.isPressed()){
+                    moveState = 5;
+                    gameState = 777;
                 }
                 if(map.distanceToGoal() <= .1) {
                     moveState = 0;
                     gameState = 777;
-                }
-                break;
-            case 4: // line up, and drop climbers
-                map.setGoal(0, lineUp);
-                linedUp(5,2);
-                if(climbTime > 0 && getRuntime() > climbTime+1){
-                    moveState = 0;
-                    gameState = 5;
                 }
                 break;
             case 777:

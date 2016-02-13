@@ -1,21 +1,14 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.ftcrobotcontroller.Map;
-import com.qualcomm.robotcore.hardware.Servo;
-
 /**
- * Created by Travis on 10/3/2015.
- * Team 10464 Autonomous program
+ * Created by Jonathan on 2/13/2016.
  */
-
-public class AutoRed62 extends AutonomousBase {
+public class AutoRed32 extends AutonomousBase {
     @Override
     public void gameState() {
         super.gameState();
         double lineUp = 5.25;
+        startPos = 9;
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:

@@ -7,45 +7,45 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 public class AutoBlue62 extends AutonomousBase {
     @Override
-    public void gameState() {
+    public void gameState(){
 
         super.gameState();
-
+        double lineUp= 5.5;
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
                 if(tDiff == 0){tDiff = getRuntime();}
-                if(getRuntime() > 5 || !gyro.isCalibrating()) {
+                if(getRuntime() > 15 && !gyro.isCalibrating()) {
                     gameState = 1;
                 }
                 break;
-            case 1: //Move up
-                map.setGoal(startPos,9.5);
+            case 1: //Move up before turning to beacon
+                map.setGoal(startPos,9);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
                     moveState = 0;
                     gameState = 2;
                 }
                 break;
-            case 2: //Sweep
-                map.setGoal(10, 6.5);
+            case 2: //Move to beacon
+                map.setGoal(9.25,lineUp);
                 linedUp(1,2);
-                if(map.distanceToGoal()<=.1) {
+                if(map.distanceToGoal()<=.1){
                     moveState = 0;
                     gameState = 3;
                 }
                 break;
-            case 3: //move to red ramp
-                map.setGoal(7, 8.5);
-                linedUp(1,2);
-                if(map.distanceToGoal()<=.1) {
-                    moveState = 0;
-                    gameState = 4;
+            case 3: //move to climber deposit
+                map.setGoal(11.5,lineUp);
+                linedUp(6,2);
+                if(touch.isPressed()){
+                    moveState = 5;
+                    gameState = 777;
                 }
-                break;
-            case 4: //align with ramp, and gun it up.
-                map.setGoal(47, 45);
-                linedUp(1,2);
+                if(map.distanceToGoal() <= .1) {
+                    moveState = 0;
+                    gameState = 777;
+                }
                 break;
             case 777:
                 moveState = 0;
