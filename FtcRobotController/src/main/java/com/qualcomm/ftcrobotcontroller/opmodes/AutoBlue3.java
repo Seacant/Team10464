@@ -10,8 +10,9 @@ public class AutoBlue3 extends AutonomousBase {
     public void gameState(){
 
         super.gameState();
-        double lineUp= 5.5;
+        double lineUp= 7.5;
         startPos = 3;
+        map.setStartPos(3);
         //Goal-specific logic
         switch(gameState){
             case 0: //Start of game:
@@ -21,7 +22,7 @@ public class AutoBlue3 extends AutonomousBase {
                 }
                 break;
             case 1: //Move up before turning to beacon
-                map.setGoal(startPos,9);
+                map.setGoal(startPos,10);
                 linedUp(1,2);
                 if(map.distanceToGoal()<=.1) {
                     moveState = 0;
